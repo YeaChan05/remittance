@@ -1,0 +1,25 @@
+spring:
+  docker:
+    compose:
+      file: classpath:docker-compose.yml
+      lifecycle-management: start-and-stop
+  datasource:
+    url: jdbc:mysql://localhost:3306/aggregate
+    username: aggregate
+    password: aggregate
+  jpa:
+    database-platform: org.hibernate.dialect.MySQLDialect
+    hibernate:
+      ddl-auto: create
+management:
+  endpoints:
+    web:
+      exposure:
+        include:
+          - health
+          - prometheus
+          - loggers
+  endpoint:
+    health:
+      probes:
+        enabled: true

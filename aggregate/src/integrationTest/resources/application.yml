@@ -1,0 +1,10 @@
+spring:
+  datasource:
+    url: jdbc:tc:mysql:8.0.36:///aggregate
+    username: aggregate
+    password: aggregate
+  jpa:
+    properties:
+      hibernate:
+        jdbc:
+          time_zone: UTC
