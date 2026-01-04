@@ -14,6 +14,7 @@ plugins {
     application
     alias(libs.plugins.spotless)
     alias(libs.plugins.build.recipe)
+    alias(libs.plugins.kover) apply false
     alias(libs.plugins.spring.boot) apply false
 }
 
