@@ -49,7 +49,7 @@
 
 ### 3.2 infrastructure (out-port)
 
-* 외부세계와의 연결 “규격(포트)”만 정의한다.
+* 외부세계와의 연결 "규격(포트)"만 정의한다.
 * 구현체 금지.
 * repository, external-client, event-publisher 같은 interface만 둔다.
 
@@ -138,7 +138,7 @@
 
 ### 4.3 application-{type} (조립/실행, 선택)
 
-* “실행 가능한 애플리케이션” 모듈.
+* "실행 가능한 애플리케이션" 모듈.
 * 각 adapter들의 Bean을 조립하기 위해 auto-configuration 의존을 둔다.
 * 통합 테스트 유틸리티를 이 계층에 둔다.
 
@@ -183,4 +183,4 @@
 ---
 
 원하면, 네가 쓰는 실제 도메인 하나(예: `member`나 `account`)를 잡고
-“각 모듈의 build.gradle.kts 의존성 블록”을 이 규칙대로 딱 맞게 예시로 만들어줄게.
+"각 모듈의 build.gradle.kts 의존성 블록"을 이 규칙대로 딱 맞게 예시로 만들어줄게.
