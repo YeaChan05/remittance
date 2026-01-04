@@ -82,15 +82,21 @@ fi
 
 create_module_dirs() {
   local module_dir="$1"
+  local include_integration="${2:-false}"
   mkdir -p "${module_dir}/src/main/java/${artifact_path}" "${module_dir}/src/main/resources"
   mkdir -p "${module_dir}/src/test/java/${artifact_path}" "${module_dir}/src/test/resources"
-  mkdir -p "${module_dir}/src/integrationTest/java/${artifact_path}" "${module_dir}/src/integrationTest/resources"
+  if [[ "$include_integration" == "true" ]]; then
+    mkdir -p "${module_dir}/src/integrationTest/java/${artifact_path}" "${module_dir}/src/integrationTest/resources"
+  fi
 }
 
 create_application_dirs() {
   local module_dir="$1"
+  local include_integration="${2:-false}"
   mkdir -p "${module_dir}/src/main/java/${artifact_path}" "${module_dir}/src/main/resources"
-  mkdir -p "${module_dir}/src/integrationTest/java/${artifact_path}" "${module_dir}/src/integrationTest/resources"
+  if [[ "$include_integration" == "true" ]]; then
+    mkdir -p "${module_dir}/src/integrationTest/java/${artifact_path}" "${module_dir}/src/integrationTest/resources"
+  fi
 }
 
 write_gradle_properties() {
@@ -139,6 +145,7 @@ for module in "${module_list[@]}"; do
 done
 
 create_module_dirs "${domain_dir}/model"
+write_build_gradle "${domain_dir}/model"
 write_gradle_properties "${domain_dir}/model" "java-lib" ""
 
 create_module_dirs "${domain_dir}/infrastructure"
@@ -153,6 +160,7 @@ write_build_gradle "${domain_dir}/service" \
 write_gradle_properties "${domain_dir}/service" "java-boot" ""
 
 create_module_dirs "${domain_dir}/exception"
+write_build_gradle "${domain_dir}/exception"
 write_gradle_properties "${domain_dir}/exception" "java" ""
 
 create_module_dirs "${domain_dir}/api"
@@ -171,14 +179,22 @@ fi
 
 for repo_type in "${repository_types_unique[@]}"; do
   repo_dir="${domain_dir}/repository-${repo_type}"
-  create_module_dirs "$repo_dir"
+  include_repo_integration="false"
+  if [[ "$repo_type" == "jpa" ]]; then
+    include_repo_integration="true"
+  fi
+  create_module_dirs "$repo_dir" "$include_repo_integration"
   write_build_gradle "$repo_dir" \
     "implementation(project(\":${domain}:infrastructure\"))"
   write_gradle_properties "$repo_dir" "java-boot-repository-${repo_type}" ""
 done
 
 application_dir="${domain_dir}/application-${application_type}"
-create_application_dirs "$application_dir"
+include_app_integration="false"
+if [[ "$application_type" == "api" ]]; then
+  include_app_integration="true"
+fi
+create_application_dirs "$application_dir" "$include_app_integration"
 
 application_deps=("implementation(project(\":${domain}:${application_type}\"))")
 for repo_type in "${repository_types_unique[@]}"; do
