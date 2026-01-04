@@ -1,0 +1,10 @@
+spring:
+  datasource:
+    url: jdbc:tc:mysql:8.0.36:///member
+    username: member
+    password: member
+  jpa:
+    properties:
+      hibernate:
+        jdbc:
+          time_zone: UTC
