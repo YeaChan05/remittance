@@ -34,8 +34,9 @@ include(":ledger:exception")
 include(":ledger:infrastructure")
 include(":ledger:repository-jpa")
 
+include(":common:application-api")
+include(":common:api")
+include(":common:exception")
 include(":common:repository-jpa")
 
 include(":aggregate")
-
-include("common:application-api")
