@@ -1,1 +1,2 @@
 org.yechan.remittance.security.PasswordEncoderAutoConfiguration
+org.yechan.remittance.MemberApiAutoConfiguration
