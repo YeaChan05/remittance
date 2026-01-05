@@ -21,7 +21,7 @@ class MemberJpaRepositoryTest {
 
   @Test
   void registerMember() {
-    MemberEntity member = MemberEntity.create("test");
+    MemberEntity member = MemberEntity.create(new TestMemberProps());
     MemberModel saved = memberRepository.save(member);
     entityManager.flush();
 
@@ -29,5 +29,23 @@ class MemberJpaRepositoryTest {
     var byId = memberRepository.findById(saved);
     assertThat(byId).isPresent();
     assertThat(byId.get()).isEqualTo(saved);
+  }
+
+  private static class TestMemberProps implements MemberProps {
+
+    @Override
+    public String name() {
+      return "test";
+    }
+
+    @Override
+    public String email() {
+      return "test@example.com";
+    }
+
+    @Override
+    public String password() {
+      return "password";
+    }
   }
 }
