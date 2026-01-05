@@ -12,13 +12,19 @@ public class MemberRepositoryImpl implements MemberRepository {
 
   @Override
   public MemberModel save(MemberProps props) {
-    MemberEntity entity = MemberEntity.create(props.name());
+    MemberEntity entity = MemberEntity.create(props);
     return repository.save(entity);
   }
 
   @Override
   public Optional<MemberModel> findById(MemberIdentifier identifier) {
     return repository.findById(identifier.memberId())
+        .map(memberEntity -> memberEntity);
+  }
+
+  @Override
+  public Optional<MemberModel> findByEmail(String email) {
+    return repository.findByEmail(email)
         .map(memberEntity -> memberEntity);
   }
 }
