@@ -5,7 +5,7 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.annotation.Import;
 
 @Import(
-    MemberAutoConfiguration.class
+    MemberRepositoryAutoConfiguration.class
 )
 @EnableAutoConfiguration
 @SpringBootConfiguration

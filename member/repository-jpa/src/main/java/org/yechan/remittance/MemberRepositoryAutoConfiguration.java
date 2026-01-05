@@ -9,7 +9,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 @AutoConfiguration(before = DataJpaRepositoriesAutoConfiguration.class)
 @EntityScan(basePackageClasses = MemberEntity.class)
 @EnableJpaRepositories(basePackageClasses = MemberJpaRepository.class)
-public class MemberAutoConfiguration {
+public class MemberRepositoryAutoConfiguration {
 
   @Bean
   MemberRepository memberRepository(MemberJpaRepository repository) {
