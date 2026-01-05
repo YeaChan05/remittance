@@ -8,5 +8,6 @@ class AccountApplicationTest {
 
   @Test
   void contextLoads() {
+    AccountApplication.main(new String[] {});
   }
 }

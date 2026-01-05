@@ -1,13 +1,13 @@
-package org.yechan.aggregate;
+package org.yechan.remittance;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class AggregateApplicationTest {
+class MemberApplicationTest {
 
   @Test
   void contextLoads() {
-    AggregateApplication.main(new String[] {});
+    MemberApplication.main(new String[] {});
   }
 }

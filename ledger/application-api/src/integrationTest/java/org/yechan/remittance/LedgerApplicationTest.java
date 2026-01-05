@@ -8,5 +8,6 @@ class LedgerApplicationTest {
 
   @Test
   void contextLoads() {
+    LedgerApplication.main(new String[] {});
   }
 }
