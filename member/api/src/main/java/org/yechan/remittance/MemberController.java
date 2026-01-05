@@ -1,6 +1,7 @@
 package org.yechan.remittance;
 
 
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -16,7 +17,7 @@ record MemberController(
 ) {
 
   @PostMapping
-  ResponseEntity<MemberRegisterResponse> register(@RequestBody MemberRegisterRequest request) {
+  ResponseEntity<MemberRegisterResponse> register(@RequestBody @Valid MemberRegisterRequest request) {
     var model = memberCreateUseCase.register(request::name);
     var response = new MemberRegisterResponse(model.name());
     return ResponseEntity.ok(response);
