@@ -18,7 +18,7 @@ record MemberController(
 
   @PostMapping
   ResponseEntity<MemberRegisterResponse> register(@RequestBody @Valid MemberRegisterRequest request) {
-    var model = memberCreateUseCase.register(request::name);
+    var model = memberCreateUseCase.register(request);
     var response = new MemberRegisterResponse(model.name());
     return ResponseEntity.ok(response);
   }
