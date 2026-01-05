@@ -9,14 +9,14 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.web.servlet.client.RestTestClient;
+import org.yechan.remittance.EmailGenerator;
+import org.yechan.remittance.PasswordGenerator;
 import org.yechan.remittance.dto.MemberRegisterRequest;
 import org.yechan.remittance.dto.MemberRegisterResponse;
 
 @SpringBootTest
 public class PostSpecs {
-
-  private static final String VALID_PASSWORD = "password1!";
-  private static final String VALID_EMAIL = "test12@test.com";
+  
   @Autowired
   RestTestClient restTestClient;
 
@@ -24,7 +24,7 @@ public class PostSpecs {
   void registerMember() {
     // Arrange
     var name = "test";
-    var request = new MemberRegisterRequest(name, VALID_EMAIL, VALID_PASSWORD);
+    var request = new MemberRegisterRequest(name, EmailGenerator.generate(), PasswordGenerator.generate());
 
     // Act
     var response = restTestClient.post()
@@ -47,7 +47,7 @@ public class PostSpecs {
       String email
   ) {
     // Arrange
-    var request = new MemberRegisterRequest("test", email, VALID_PASSWORD);
+    var request = new MemberRegisterRequest("test", email, PasswordGenerator.generate());
 
     // Act & Assert
     restTestClient.post()
@@ -63,7 +63,7 @@ public class PostSpecs {
       String password
   ) {
     // Arrange
-    var request = new MemberRegisterRequest("test", VALID_EMAIL, password);
+    var request = new MemberRegisterRequest("test", EmailGenerator.generate(), password);
 
     // Act & Assert
     restTestClient.post()
@@ -76,18 +76,19 @@ public class PostSpecs {
   @Test
   void registerMemberWithDuplicatedEmail() {
     // Arrange
-    var request = new MemberRegisterRequest("test", VALID_EMAIL, VALID_PASSWORD);
+    var email = EmailGenerator.generate();
+    var password = PasswordGenerator.generate();
 
     restTestClient.post()
         .uri("/members")
-        .body(new MemberRegisterRequest("test", VALID_EMAIL, VALID_PASSWORD))
+        .body(new MemberRegisterRequest("test", email, password))
         .exchange()
         .expectStatus().isOk();
 
     // Act & Assert
     restTestClient.post()
         .uri("/members")
-        .body(new MemberRegisterRequest("test", VALID_EMAIL, VALID_PASSWORD))
+        .body(new MemberRegisterRequest("test", email, password))
         .exchange()
         .expectStatus().is5xxServerError()
         .expectBody(String.class)
