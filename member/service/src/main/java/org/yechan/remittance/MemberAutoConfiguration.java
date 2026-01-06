@@ -1,11 +1,9 @@
 package org.yechan.remittance;
 
 import org.springframework.boot.autoconfigure.AutoConfiguration;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 
 @AutoConfiguration
-@EnableConfigurationProperties(AuthTokenProperties.class)
 class MemberAutoConfiguration {
 
   @Bean
@@ -23,11 +21,4 @@ class MemberAutoConfiguration {
     return new MemberQueryService(memberRepository, passwordHashEncoder, tokenGenerator);
   }
 
-  @Bean
-  TokenGenerator tokenGenerator(AuthTokenProperties authTokenProperties) {
-    return new JwtTokenGenerator(
-        authTokenProperties.salt(),
-        authTokenProperties.accessExpiresIn(),
-        authTokenProperties.refreshExpiresIn());
-  }
 }

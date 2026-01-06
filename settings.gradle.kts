@@ -47,5 +47,6 @@ include(":common:application-api")
 include(":common:api")
 include(":common:exception")
 include(":common:repository-jpa")
+include(":common:security")
 
 include(":aggregate")

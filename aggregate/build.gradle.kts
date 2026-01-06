@@ -2,6 +2,8 @@ plugins {
     alias(libs.plugins.kover)
 }
 dependencies {
+    implementation(project(":common:security"))
+
     implementation(project(":account:api"))
     implementation(project(":account:repository-jpa"))
 
