@@ -21,4 +21,11 @@ class MemberAutoConfiguration {
     return new MemberQueryService(memberRepository, passwordHashEncoder, tokenGenerator);
   }
 
+  @Bean
+  MemberAuthQueryUseCase memberAuthQueryUseCase(
+      MemberRepository memberRepository,
+      PasswordHashEncoder passwordHashEncoder) {
+    return new MemberAuthQueryService(memberRepository, passwordHashEncoder);
+  }
+
 }
