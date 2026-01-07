@@ -48,6 +48,6 @@ Authorization: Bearer {accessToken}
 - context
   - authentication required
 
-- status: `409 Conflict`
+- status: `400 Bad Request`
 - context
   - duplicate account
