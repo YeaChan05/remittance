@@ -1,4 +1,4 @@
-package org.yechan.remittance.api;
+package org.yechan.remittance.api.member;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -9,7 +9,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.web.servlet.client.RestTestClient;
-import org.yechan.aggregate.AggregateApplication;
+import org.yechan.remittance.application.AggregateApplication;
 import org.yechan.remittance.EmailGenerator;
 import org.yechan.remittance.PasswordGenerator;
 import org.yechan.remittance.dto.MemberRegisterRequest;

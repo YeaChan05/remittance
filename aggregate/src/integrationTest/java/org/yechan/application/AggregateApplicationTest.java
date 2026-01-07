@@ -1,9 +1,10 @@
-package org.yechan.aggregate;
+package org.yechan.application;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.yechan.remittance.application.AggregateApplication;
 
-@SpringBootTest
+@SpringBootTest(classes = AggregateApplication.class)
 class AggregateApplicationTest {
 
   @Test

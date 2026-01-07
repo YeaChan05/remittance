@@ -12,6 +12,14 @@ spring:
           time_zone: UTC
     hibernate:
       ddl-auto: create
+management:
+  endpoints:
+    web:
+      exposure:
+        include:
+          - health
+          - info
+          - beans
 auth:
   token:
     salt: remittance-token-salt
