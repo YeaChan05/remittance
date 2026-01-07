@@ -1,1 +1,1 @@
-org.yechan.remittance.AuthInfrastructureAutoConfiguration
+org.yechan.remittance.auth.AuthClientConfiguration

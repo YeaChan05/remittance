@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.web.servlet.client.RestTestClient;
-import org.yechan.remittance.application.AggregateApplication;
+import org.yechan.remittance.member.application.AggregateApplication;
 
 @SpringBootTest(classes = AggregateApplication.class,
     webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)

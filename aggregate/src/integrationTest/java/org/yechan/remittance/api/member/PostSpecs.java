@@ -9,11 +9,11 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.web.servlet.client.RestTestClient;
-import org.yechan.remittance.application.AggregateApplication;
+import org.yechan.remittance.member.application.AggregateApplication;
 import org.yechan.remittance.EmailGenerator;
 import org.yechan.remittance.PasswordGenerator;
-import org.yechan.remittance.dto.MemberRegisterRequest;
-import org.yechan.remittance.dto.MemberRegisterResponse;
+import org.yechan.remittance.member.dto.MemberRegisterRequest;
+import org.yechan.remittance.member.dto.MemberRegisterResponse;
 
 @SpringBootTest(classes = AggregateApplication.class)
 public class PostSpecs {
