@@ -31,10 +31,10 @@ jobs:
       - name: Integration tests
         run: ./gradlew integrationTest
 
-      - name: Kover XML report
-        run: ./gradlew :aggregate:koverXmlReport
+      - name: Jacoco report
+        run: ./gradlew jacocoRootReport
 
       - name: Upload coverage
         uses: codecov/codecov-action@v5.5.2
         with:
-          files: aggregate/build/reports/kover/report.xml
+          files: build/reports/jacoco/jacocoRootReport/jacocoRootReport.xml

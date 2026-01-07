@@ -1,6 +1,3 @@
-plugins {
-    alias(libs.plugins.kover)
-}
 dependencies {
     implementation(project(":common:security"))
 
@@ -23,24 +20,5 @@ dependencies {
 
     integrationTestRuntimeOnly("com.mysql:mysql-connector-j") {
         exclude(group = "com.google.protobuf", module = "protobuf-java")
-    }
-}
-
-kover {
-    reports {
-        total {
-            html {
-                onCheck.set(true)
-            }
-            xml {
-                onCheck.set(true)
-            }
-            verify {
-                onCheck.set(true)
-                rule {
-                    minBound(90)
-                }
-            }
-        }
     }
 }

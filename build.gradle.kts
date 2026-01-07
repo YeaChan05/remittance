@@ -1,3 +1,4 @@
+
 import com.linecorp.support.project.multi.recipe.configureByTypeExpression
 import com.linecorp.support.project.multi.recipe.configureByTypeHaving
 import com.linecorp.support.project.multi.recipe.configureByTypePrefix
@@ -14,8 +15,8 @@ plugins {
     application
     alias(libs.plugins.spotless)
     alias(libs.plugins.build.recipe)
-    alias(libs.plugins.kover) apply false
     alias(libs.plugins.spring.boot) apply false
+    jacoco
 }
 
 allprojects {
@@ -157,8 +158,16 @@ configureByTypeExpression("^(?!.*application).*$") {
     }
 }
 
-// configure package path by project name
+val jacocoAggregationProjects = mutableListOf<Project>()
+
 subprojects {
+    apply(plugin = "jacoco")
+
+    plugins.withType<JavaPlugin> {
+        jacocoAggregationProjects.add(this@subprojects)
+    }
+
+    // configure package path by project name
     afterEvaluate {
         val projectType = findProperty("type")?.toString().orEmpty()
         val isApplicationModule = projectType.contains("application")
@@ -192,5 +201,29 @@ spotless {
             "**/generated/**",
             "**/out/**"
         )
+    }
+}
+
+tasks.register<JacocoReport>("jacocoRootReport") {
+    dependsOn(jacocoAggregationProjects.flatMap { project ->
+        project.tasks.withType<Test>().toList()
+    })
+
+    val sourceSets = jacocoAggregationProjects.mapNotNull { project ->
+        project.extensions.findByType(SourceSetContainer::class.java)?.findByName("main")
+    }
+
+    executionData.setFrom(jacocoAggregationProjects.map { project ->
+        project.fileTree(project.layout.buildDirectory) {
+            include("jacoco/*.exec")
+        }
+    })
+
+    classDirectories.setFrom(sourceSets.map { it.output })
+    sourceDirectories.setFrom(sourceSets.map { it.allSource.srcDirs })
+
+    reports {
+        html.required.set(true)
+        xml.required.set(true)
     }
 }
