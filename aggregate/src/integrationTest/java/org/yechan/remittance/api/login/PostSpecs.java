@@ -93,7 +93,7 @@ public class PostSpecs {
         .uri("/login")
         .body(new MemberLoginRequest(email, PasswordGenerator.generate()))
         .exchange()
-        .expectStatus().is5xxServerError()
+        .expectStatus().isUnauthorized()
         .expectBody(String.class)
         .consumeWith(res ->
             assertThat(Objects.requireNonNull(res.getResponseBody()))
