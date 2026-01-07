@@ -1,14 +1,14 @@
 package org.yechan.remittance;
 
-class BusinessException extends RuntimeException {
+public class BusinessException extends RuntimeException {
   private final Status status;
 
-  BusinessException(Status status, String message) {
+  protected BusinessException(Status status, String message) {
     super(message);
     this.status = status;
   }
 
-  BusinessException(String message) {
+  public BusinessException(String message) {
     super(message);
     this.status = Status.INTERNAL_SERVER_ERROR;
   }

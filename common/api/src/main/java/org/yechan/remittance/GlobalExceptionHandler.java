@@ -6,9 +6,9 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @RestControllerAdvice
-class GlobalExceptionHandler {
+public class GlobalExceptionHandler {
   @ExceptionHandler(BusinessException.class)
-  ResponseEntity<?> handleBusinessException(BusinessException e) {
+  public ResponseEntity<?> handleBusinessException(BusinessException e) {
     return ResponseEntity.internalServerError().body(e);
   }
 

@@ -14,7 +14,7 @@ import org.jspecify.annotations.Nullable;
 
 
 @MappedSuperclass
-abstract class BaseEntity {
+public abstract class BaseEntity {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
