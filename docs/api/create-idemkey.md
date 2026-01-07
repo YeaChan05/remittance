@@ -21,11 +21,11 @@ Authorization: `Bearer {access_token}`
 
 ## response
 
-* status: `200 OK`
-* body
+- status: `200 OK`
+- body
 
-    * idempotencyKey: 발급된 멱등키(UUID)
-    * expiresAt: 멱등키 유효 만료 시각(ISO-8601)
+    - idempotencyKey: 발급된 멱등키(UUID)
+    - expiresAt: 멱등키 유효 만료 시각(ISO-8601)
 
 ```json
 {
@@ -36,5 +36,5 @@ Authorization: `Bearer {access_token}`
 
 ## error
 
-* status: `500 Internal Server Error`
-* context: 멱등키 생성 또는 저장 중 서버 내부 오류
+- status: `500 Internal Server Error`
+- context: 멱등키 생성 또는 저장 중 서버 내부 오류

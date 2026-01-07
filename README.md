@@ -15,9 +15,6 @@
 - 거래내역 조회(최신순)
 
 ## 실행 방법
-- `./gradlew :account:application-api:bootRun`
-- `./gradlew :ledger:application-api:bootRun`
-- `./gradlew :member:application-api:bootRun`
 - `./gradlew :aggregate:bootRun`
-- Docker Compose 파일은 각 모듈의 `src/main/resources/docker-compose.yml`에 있습니다.
-- aggregate 모듈은 여러 도메인 애플리케이션을 한 곳에 묶어 실행하는 통합 실행용 모듈입니다.
+- Docker Compose 파일은 `src/main/resources/docker-compose.yml`에 있습니다.
+- aggregate 모듈은 여러 도메인을 한 곳에 묶어 실행하는 통합 실행용 모듈입니다.

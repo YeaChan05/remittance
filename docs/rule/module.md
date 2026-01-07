@@ -4,7 +4,7 @@
 
 ## 1. 최상위 원칙
 
-* Driving → Core → Driven 방향만 허용한다.
+* Driving -> Core -> Driven 방향만 허용한다.
 * 기술(JPA, Web, MQ 등)은 Driven 모듈에만 둔다.
 * 다른 애플리케이션과의 연결은 `api-internal` 계약으로만 한다.
 * 인증/인가 책임은 역할별로 분리한다.

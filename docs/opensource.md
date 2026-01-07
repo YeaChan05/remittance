@@ -14,10 +14,10 @@
 ## 빌드 플러그인
 
 - Spotless: `com.diffplug.spotless` - 코드 포맷팅
-- Kover: `org.jetbrains.kotlinx.kover` - 테스트 커버리지 리포트/검증
+- Jacoco: `jacoco` - 코드 커버리지 측정
 - Build Recipe Plugin: `com.linecorp.build-recipe-plugin` - 멀티모듈 공통 Gradle 설정
 
 ## CI 오픈소스 액션
 
-- sdkman/sdkman-action@v1 - SDKMAN 기반 Java 설치
-- codecov/codecov-action@v5.5.2 - 커버리지 업로드
+- sdkman/sdkman-action - SDKMAN 기반 Java 설치
+- madrapps/jacoco-report - Jacoco 리포트 생성
