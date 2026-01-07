@@ -1,7 +1,6 @@
-package org.yechan.remittance.security;
+package org.yechan.remittance;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.yechan.remittance.PasswordHashEncoder;
 
 public class BcryptPasswordHashEncoder implements PasswordHashEncoder {
 

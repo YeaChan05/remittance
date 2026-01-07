@@ -1,10 +1,9 @@
-package org.yechan.remittance.security;
+package org.yechan.remittance;
 
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.yechan.remittance.PasswordHashEncoder;
 
 @AutoConfiguration
 public class PasswordEncoderAutoConfiguration {
