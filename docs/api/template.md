@@ -1,4 +1,4 @@
-# API 
+# API
 
 ## 개요
 - goal:
@@ -14,7 +14,7 @@ Content-Type: application/json
 
 {
 }
-``` 
+```
 
 ## response
 - status: `200 OK`
@@ -25,3 +25,7 @@ Content-Type: application/json
 ```json
 
 ```
+
+## error
+- status:
+- context
