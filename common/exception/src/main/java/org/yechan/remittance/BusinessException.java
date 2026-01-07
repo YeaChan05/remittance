@@ -12,4 +12,8 @@ public class BusinessException extends RuntimeException {
     super(message);
     this.status = Status.INTERNAL_SERVER_ERROR;
   }
+
+  public Status getStatus() {
+    return status;
+  }
 }
