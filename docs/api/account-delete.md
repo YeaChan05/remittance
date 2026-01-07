@@ -32,10 +32,12 @@ Authorization: Bearer {accessToken}
 - status: `400 Bad Request`
 - context
   - `accountId` is invalid
+  - `memberId` is invalid
 
 - status: `401 Unauthorized`
 - context
   - authentication required
+  - account owner mismatch
 
 - status: `404 Not Found`
 - context
