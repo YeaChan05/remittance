@@ -3,12 +3,22 @@ package org.yechan.remittance;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.lang.reflect.Field;
-import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.hibernate.proxy.HibernateProxy;
 import org.hibernate.proxy.LazyInitializer;
+import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 class BaseEntityIntegrationTest {
+
+  private static void setId(BaseEntity entity, Long id) {
+    try {
+      Field field = BaseEntity.class.getDeclaredField("id");
+      field.setAccessible(true);
+      field.set(entity, id);
+    } catch (NoSuchFieldException | IllegalAccessException ex) {
+      throw new IllegalStateException(ex);
+    }
+  }
 
   @Test
   void equalsReturnsTrueForSameId() {
@@ -49,6 +59,8 @@ class BaseEntityIntegrationTest {
     assertThat(first.hashCode()).isEqualTo(second.hashCode());
   }
 
+  // hibernate proxy test
+
   @Test
   void equalsReturnsTrueWhenComparingHibernateProxy() {
     TestEntity entity = new TestEntity();
@@ -62,20 +74,8 @@ class BaseEntityIntegrationTest {
     assertThat(proxy).isEqualTo(entity);
   }
 
-  // hibernate proxy test
-
-
-  private static void setId(BaseEntity entity, Long id) {
-    try {
-      Field field = BaseEntity.class.getDeclaredField("id");
-      field.setAccessible(true);
-      field.set(entity, id);
-    } catch (NoSuchFieldException | IllegalAccessException ex) {
-      throw new IllegalStateException(ex);
-    }
-  }
-
   private static class TestEntity extends BaseEntity {
+
   }
 
   private static class TestEntityProxy extends TestEntity implements HibernateProxy {

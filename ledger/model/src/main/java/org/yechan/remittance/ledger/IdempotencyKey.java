@@ -7,6 +7,6 @@ public record IdempotencyKey(
     Long memberId,
     String idempotencyKey,
     Instant expiresAt
-) implements IdempotencyKeyModel{
+) implements IdempotencyKeyModel {
 
 }

@@ -68,7 +68,8 @@ public class CommonSecurityAutoConfiguration {
     return http
         .formLogin(FormLoginConfigurer::disable)
         .csrf(CsrfConfigurer::disable)
-        .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+        .sessionManagement(
+            session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         .exceptionHandling(handler -> handler
             .authenticationEntryPoint(authenticationEntryPoint)
             .accessDeniedHandler(accessDeniedHandler))

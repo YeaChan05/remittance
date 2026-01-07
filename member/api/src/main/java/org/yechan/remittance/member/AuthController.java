@@ -16,7 +16,8 @@ record AuthController(
   @PostMapping("/login")
   ResponseEntity<MemberLoginResponse> login(@RequestBody @Valid MemberLoginRequest request) {
     var token = memberQueryUseCase.login(request);
-    var response = new MemberLoginResponse(token.accessToken(), token.refreshToken(), token.expiresIn());
+    var response = new MemberLoginResponse(token.accessToken(), token.refreshToken(),
+        token.expiresIn());
     return ResponseEntity.ok(response);
   }
 }

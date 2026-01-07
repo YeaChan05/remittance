@@ -1,6 +1,7 @@
 package org.yechan.remittance;
 
 public class BusinessException extends RuntimeException {
+
   private final Status status;
 
   protected BusinessException(Status status, String message) {

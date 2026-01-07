@@ -16,7 +16,8 @@ class IdempotencyKeyServiceTest {
     var saved = new AtomicReference<IdempotencyKeyProps>();
     IdempotencyKeyRepository repository = props -> {
       saved.set(props);
-      return new IdempotencyKey(saved.get().memberId(), props.memberId(), props.idempotencyKey(), props.expiresAt());
+      return new IdempotencyKey(saved.get().memberId(), props.memberId(), props.idempotencyKey(),
+          props.expiresAt());
     };
     Instant now = Instant.parse("2024-01-01T00:00:00Z");
     Clock clock = Clock.fixed(now, ZoneOffset.UTC);

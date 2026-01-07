@@ -39,7 +39,8 @@ class AccountDeleteServiceIntegrationTest {
 
   @Test
   void throwsWhenAccountDoesNotExist() {
-    AccountRepository repository = new TestAccountRepository(Optional.empty(), new AtomicReference<>());
+    AccountRepository repository = new TestAccountRepository(Optional.empty(),
+        new AtomicReference<>());
     AccountDeleteUseCase useCase = new AccountDeleteService(repository);
 
     assertThatThrownBy(() -> useCase.delete(new TestDeleteProps(1L, 10L)))
@@ -83,9 +84,11 @@ class AccountDeleteServiceIntegrationTest {
   }
 
   private record TestDeleteProps(long memberId, long accountId) implements AccountDeleteProps {
+
   }
 
   private record TestAccount(Long memberId, Long accountId) implements AccountModel {
+
     @Override
     public String bankCode() {
       return "001";

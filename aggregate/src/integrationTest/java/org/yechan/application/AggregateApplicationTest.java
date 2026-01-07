@@ -9,6 +9,6 @@ class AggregateApplicationTest {
 
   @Test
   void contextLoads() {
-    AggregateApplication.main(new String[] {});
+    AggregateApplication.main(new String[]{});
   }
 }

@@ -14,7 +14,8 @@ record AuthApiController(
   @PostMapping("/login")
   ResponseEntity<AuthLoginResponse> login(@RequestBody @Valid AuthLoginRequest request) {
     var token = authLoginUseCase.login(request);
-    var response = new AuthLoginResponse(token.accessToken(), token.refreshToken(), token.expiresIn());
+    var response = new AuthLoginResponse(token.accessToken(), token.refreshToken(),
+        token.expiresIn());
     return ResponseEntity.ok(response);
   }
 }

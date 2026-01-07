@@ -7,8 +7,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import javax.crypto.SecretKey;
 import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 
 class JwtTokenVerifier implements TokenVerifier {
 

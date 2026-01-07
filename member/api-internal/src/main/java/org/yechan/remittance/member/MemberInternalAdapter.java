@@ -10,7 +10,8 @@ class MemberInternalAdapter implements MemberInternalApi {
 
   @Override
   public LoginVerifyResponse verify(LoginVerifyRequest request) {
-    var result = memberAuthQueryUseCase.verify(new MemberLoginRequest(request.email(), request.password()));
+    var result = memberAuthQueryUseCase.verify(
+        new MemberLoginRequest(request.email(), request.password()));
     return new LoginVerifyResponse(result.valid(), result.memberId());
   }
 

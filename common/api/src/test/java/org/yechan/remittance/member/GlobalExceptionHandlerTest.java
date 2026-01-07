@@ -9,6 +9,7 @@ import org.yechan.remittance.BusinessException;
 import org.yechan.remittance.GlobalExceptionHandler;
 
 class GlobalExceptionHandlerTest {
+
   @Test
   void handleBusinessExceptionReturnsInternalServerErrorAndBody() {
     GlobalExceptionHandler handler = new GlobalExceptionHandler();
@@ -32,6 +33,7 @@ class GlobalExceptionHandlerTest {
   }
 
   private static class SomeBusinessException extends BusinessException {
+
     SomeBusinessException(String message) {
       super(message);
     }

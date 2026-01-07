@@ -26,7 +26,8 @@ record AccountController(
       @RequestBody @Valid AccountCreateRequest request
   ) {
     var account = accountCreateUseCase.create(
-        new AccountCreateCommand(memberId, request.bankCode(), request.accountNumber(), request.accountName()));
+        new AccountCreateCommand(memberId, request.bankCode(), request.accountNumber(),
+            request.accountName()));
     return ResponseEntity.ok(new AccountCreateResponse(account.accountId(), account.accountName()));
   }
 

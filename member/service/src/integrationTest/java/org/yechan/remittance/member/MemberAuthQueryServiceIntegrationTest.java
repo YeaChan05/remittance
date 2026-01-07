@@ -37,7 +37,8 @@ class MemberAuthQueryServiceIntegrationTest {
         return true;
       }
     };
-    MemberAuthQueryUseCase useCase = new MemberAuthQueryService(memberRepository, passwordHashEncoder);
+    MemberAuthQueryUseCase useCase = new MemberAuthQueryService(memberRepository,
+        passwordHashEncoder);
 
     MemberAuthValue result = useCase.verify(new TestLoginProps());
 
@@ -74,7 +75,8 @@ class MemberAuthQueryServiceIntegrationTest {
         return false;
       }
     };
-    MemberAuthQueryUseCase useCase = new MemberAuthQueryService(memberRepository, passwordHashEncoder);
+    MemberAuthQueryUseCase useCase = new MemberAuthQueryService(memberRepository,
+        passwordHashEncoder);
 
     MemberAuthValue result = useCase.verify(new TestLoginProps());
 
@@ -111,7 +113,8 @@ class MemberAuthQueryServiceIntegrationTest {
         return true;
       }
     };
-    MemberAuthQueryUseCase useCase = new MemberAuthQueryService(memberRepository, passwordHashEncoder);
+    MemberAuthQueryUseCase useCase = new MemberAuthQueryService(memberRepository,
+        passwordHashEncoder);
 
     MemberAuthValue result = useCase.verify(new TestLoginProps());
 

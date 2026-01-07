@@ -13,7 +13,8 @@ class MemberAuthQueryService implements MemberAuthQueryUseCase {
   private final MemberRepository memberRepository;
   private final PasswordHashEncoder passwordHashEncoder;
 
-  public MemberAuthQueryService(MemberRepository memberRepository, PasswordHashEncoder passwordHashEncoder) {
+  public MemberAuthQueryService(MemberRepository memberRepository,
+      PasswordHashEncoder passwordHashEncoder) {
     this.memberRepository = memberRepository;
     this.passwordHashEncoder = passwordHashEncoder;
   }

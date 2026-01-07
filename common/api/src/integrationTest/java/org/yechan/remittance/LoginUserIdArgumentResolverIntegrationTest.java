@@ -18,6 +18,10 @@ class LoginUserIdArgumentResolverIntegrationTest {
 
   private final LoginUserIdArgumentResolver resolver = new LoginUserIdArgumentResolver();
 
+  private static Method method(String name, Class<?> parameterType) throws NoSuchMethodException {
+    return TestController.class.getDeclaredMethod(name, parameterType);
+  }
+
   @AfterEach
   void clearContext() {
     SecurityContextHolder.clearContext();
@@ -39,7 +43,8 @@ class LoginUserIdArgumentResolverIntegrationTest {
 
   @Test
   void doesNotSupportWithoutAnnotation() throws Exception {
-    MethodParameter parameter = new MethodParameter(method("handlerWithoutAnnotation", Long.class), 0);
+    MethodParameter parameter = new MethodParameter(method("handlerWithoutAnnotation", Long.class),
+        0);
 
     assertThat(resolver.supportsParameter(parameter)).isFalse();
   }
@@ -64,7 +69,8 @@ class LoginUserIdArgumentResolverIntegrationTest {
   void throwsWhenAuthenticationMissing() throws Exception {
     MethodParameter parameter = new MethodParameter(method("handlerWithLong", Long.class), 0);
 
-    assertThatThrownBy(() -> resolver.resolveArgument(parameter, new ModelAndViewContainer(), null, null))
+    assertThatThrownBy(
+        () -> resolver.resolveArgument(parameter, new ModelAndViewContainer(), null, null))
         .isInstanceOf(BusinessException.class)
         .hasMessage("Unauthorized");
   }
@@ -80,7 +86,8 @@ class LoginUserIdArgumentResolverIntegrationTest {
     );
     MethodParameter parameter = new MethodParameter(method("handlerWithLong", Long.class), 0);
 
-    assertThatThrownBy(() -> resolver.resolveArgument(parameter, new ModelAndViewContainer(), null, null))
+    assertThatThrownBy(
+        () -> resolver.resolveArgument(parameter, new ModelAndViewContainer(), null, null))
         .isInstanceOf(BusinessException.class)
         .hasMessage("Unauthorized");
   }
@@ -96,13 +103,10 @@ class LoginUserIdArgumentResolverIntegrationTest {
     );
     MethodParameter parameter = new MethodParameter(method("handlerWithLong", Long.class), 0);
 
-    assertThatThrownBy(() -> resolver.resolveArgument(parameter, new ModelAndViewContainer(), null, null))
+    assertThatThrownBy(
+        () -> resolver.resolveArgument(parameter, new ModelAndViewContainer(), null, null))
         .isInstanceOf(BusinessException.class)
         .hasMessage("Invalid user id");
-  }
-
-  private static Method method(String name, Class<?> parameterType) throws NoSuchMethodException {
-    return TestController.class.getDeclaredMethod(name, parameterType);
   }
 
   private static class TestController {
