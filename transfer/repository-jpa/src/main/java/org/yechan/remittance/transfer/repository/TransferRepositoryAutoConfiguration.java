@@ -6,6 +6,7 @@ import org.springframework.boot.persistence.autoconfigure.EntityScan;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.yechan.remittance.transfer.IdempotencyKeyRepository;
+import org.yechan.remittance.transfer.LedgerRepository;
 import org.yechan.remittance.transfer.OutboxEventRepository;
 import org.yechan.remittance.transfer.TransferRepository;
 
@@ -13,12 +14,14 @@ import org.yechan.remittance.transfer.TransferRepository;
 @EntityScan(basePackageClasses = {
     IdempotencyKeyEntity.class,
     TransferEntity.class,
-    OutboxEventEntity.class
+    OutboxEventEntity.class,
+    LedgerEntity.class
 })
 @EnableJpaRepositories(basePackageClasses = {
     IdempotencyKeyJpaRepository.class,
     TransferJpaRepository.class,
-    OutboxEventJpaRepository.class
+    OutboxEventJpaRepository.class,
+    LedgerJpaRepository.class
 })
 public class TransferRepositoryAutoConfiguration {
 
@@ -35,5 +38,10 @@ public class TransferRepositoryAutoConfiguration {
   @Bean
   OutboxEventRepository outboxEventRepository(OutboxEventJpaRepository repository) {
     return new OutboxEventRepositoryImpl(repository);
+  }
+
+  @Bean
+  LedgerRepository ledgerRepository(LedgerJpaRepository repository) {
+    return new LedgerRepositoryImpl(repository);
   }
 }
