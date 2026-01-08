@@ -15,7 +15,11 @@ import org.yechan.remittance.transfer.TransferRepository;
     TransferEntity.class,
     OutboxEventEntity.class
 })
-@EnableJpaRepositories(basePackageClasses = IdempotencyKeyJpaRepository.class)
+@EnableJpaRepositories(basePackageClasses = {
+    IdempotencyKeyJpaRepository.class,
+    TransferJpaRepository.class,
+    OutboxEventJpaRepository.class
+})
 public class TransferRepositoryAutoConfiguration {
 
   @Bean

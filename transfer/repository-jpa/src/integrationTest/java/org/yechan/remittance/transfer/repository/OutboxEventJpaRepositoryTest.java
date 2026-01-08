@@ -3,7 +3,6 @@ package org.yechan.remittance.transfer.repository;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import jakarta.persistence.EntityManager;
-import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 import org.junit.jupiter.api.Test;
@@ -39,10 +38,9 @@ class OutboxEventJpaRepositoryTest {
 
   @Test
   void findNewForPublishOrdersAndFilters() {
-    Instant now = Instant.parse("2026-03-01T00:00:00Z");
-    var e1 = saveOutboxEvent(OutboxEventStatusValue.NEW, now.minusSeconds(60));
-    saveOutboxEvent(OutboxEventStatusValue.SENT, now.minusSeconds(50));
-    var e3 = saveOutboxEvent(OutboxEventStatusValue.NEW, now.minusSeconds(10));
+    var e1 = saveOutboxEvent(OutboxEventStatusValue.NEW);
+    saveOutboxEvent(OutboxEventStatusValue.SENT);
+    var e3 = saveOutboxEvent(OutboxEventStatusValue.NEW);
     flushClear();
 
     List<OutboxEventEntity> results = repository.findNewForPublish(
@@ -57,9 +55,8 @@ class OutboxEventJpaRepositoryTest {
 
   @Test
   void findNewForPublishRespectsLimit() {
-    Instant now = Instant.parse("2026-03-02T00:00:00Z");
-    var e1 = saveOutboxEvent(OutboxEventStatusValue.NEW, now.minusSeconds(120));
-    saveOutboxEvent(OutboxEventStatusValue.NEW, now.minusSeconds(30));
+    var e1 = saveOutboxEvent(OutboxEventStatusValue.NEW);
+    saveOutboxEvent(OutboxEventStatusValue.NEW);
     flushClear();
 
     List<OutboxEventEntity> results = repository.findNewForPublish(
@@ -74,8 +71,7 @@ class OutboxEventJpaRepositoryTest {
 
   @Test
   void markSentUpdatesStatus() {
-    Instant now = Instant.parse("2026-03-03T00:00:00Z");
-    var e1 = saveOutboxEvent(OutboxEventStatusValue.NEW, now);
+    var e1 = saveOutboxEvent(OutboxEventStatusValue.NEW);
     flushClear();
 
     int updated = repository.markSent(e1.eventId(), OutboxEventStatusValue.SENT);
@@ -88,11 +84,10 @@ class OutboxEventJpaRepositoryTest {
   }
 
   private OutboxEventEntity saveOutboxEvent(
-      OutboxEventStatusValue status,
-      Instant createdAt
+      OutboxEventStatusValue status
   ) {
     return repository.save(OutboxEventEntity.create(
-        new TestOutboxEventProps(status, createdAt)
+        new TestOutboxEventProps(status)
     ));
   }
 
@@ -102,8 +97,7 @@ class OutboxEventJpaRepositoryTest {
   }
 
   private record TestOutboxEventProps(
-      OutboxEventStatusValue status,
-      Instant createdAt
+      OutboxEventStatusValue status
   ) implements OutboxEventProps {
 
     @Override

@@ -9,7 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.yechan.remittance.transfer.OutboxEventProps.OutboxEventStatusValue;
 
-interface OutboxEventJpaRepository extends JpaRepository<OutboxEventEntity, String> {
+interface OutboxEventJpaRepository extends JpaRepository<OutboxEventEntity, Long> {
 
   @Query("""
       select o from OutboxEventEntity o
@@ -27,10 +27,10 @@ interface OutboxEventJpaRepository extends JpaRepository<OutboxEventEntity, Stri
   @Query("""
       update OutboxEventEntity o
       set o.status = :status
-      where o.eventId = :eventId
+      where o.id = :eventId
       """)
   int markSent(
-      @Param("eventId") String eventId,
+      @Param("eventId") Long eventId,
       @Param("status") OutboxEventStatusValue status
   );
 }
