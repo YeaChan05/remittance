@@ -3,6 +3,7 @@ package org.yechan.remittance.account.repository;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
+import java.math.BigDecimal;
 import org.yechan.remittance.BaseEntity;
 import org.yechan.remittance.account.AccountModel;
 import org.yechan.remittance.account.AccountProps;
@@ -23,14 +24,24 @@ public class AccountEntity extends BaseEntity implements AccountModel {
   @Column(nullable = false)
   private String accountName;
 
+  @Column(nullable = false)
+  private BigDecimal balance;
+
   protected AccountEntity() {
   }
 
-  private AccountEntity(Long memberId, String bankCode, String accountNumber, String accountName) {
+  private AccountEntity(
+      Long memberId,
+      String bankCode,
+      String accountNumber,
+      String accountName,
+      BigDecimal balance
+  ) {
     this.memberId = memberId;
     this.bankCode = bankCode;
     this.accountNumber = accountNumber;
     this.accountName = accountName;
+    this.balance = balance;
   }
 
   static AccountEntity create(AccountProps props) {
@@ -38,7 +49,8 @@ public class AccountEntity extends BaseEntity implements AccountModel {
         props.memberId(),
         props.bankCode(),
         props.accountNumber(),
-        props.accountName()
+        props.accountName(),
+        props.balance()
     );
   }
 
@@ -65,5 +77,14 @@ public class AccountEntity extends BaseEntity implements AccountModel {
   @Override
   public String accountName() {
     return accountName;
+  }
+
+  @Override
+  public BigDecimal balance() {
+    return balance;
+  }
+
+  void updateBalance(BigDecimal balance) {
+    this.balance = balance;
   }
 }

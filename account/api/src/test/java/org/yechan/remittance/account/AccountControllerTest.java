@@ -3,6 +3,7 @@ package org.yechan.remittance.account;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
+import java.math.BigDecimal;
 import org.junit.jupiter.api.Test;
 import org.yechan.remittance.account.dto.AccountCreateRequest;
 
@@ -15,14 +16,16 @@ class AccountControllerTest {
         props.memberId(),
         props.bankCode(),
         props.accountNumber(),
-        props.accountName()
+        props.accountName(),
+        props.balance()
     );
     AccountDeleteUseCase deleteUseCase = props -> new Account(
         props.accountId(),
         props.memberId(),
         "090",
         "123-456",
-        "생활비"
+        "생활비",
+        BigDecimal.ZERO
     );
     var controller = new AccountController(createUseCase, deleteUseCase);
 
@@ -40,14 +43,16 @@ class AccountControllerTest {
         props.memberId(),
         props.bankCode(),
         props.accountNumber(),
-        props.accountName()
+        props.accountName(),
+        BigDecimal.ZERO
     );
     AccountDeleteUseCase deleteUseCase = props -> new Account(
         props.accountId(),
         props.memberId(),
         "090",
         "123-456",
-        "생활비"
+        "생활비",
+        BigDecimal.ZERO
     );
     var controller = new AccountController(createUseCase, deleteUseCase);
 

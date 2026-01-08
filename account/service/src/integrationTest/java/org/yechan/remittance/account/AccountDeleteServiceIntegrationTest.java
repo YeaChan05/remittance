@@ -3,6 +3,7 @@ package org.yechan.remittance.account;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import java.math.BigDecimal;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 import org.junit.jupiter.api.Test;
@@ -69,12 +70,22 @@ class AccountDeleteServiceIntegrationTest {
     }
 
     @Override
+    public Optional<AccountModel> findByIdForUpdate(AccountIdentifier identifier) {
+      return Optional.empty();
+    }
+
+    @Override
     public Optional<AccountModel> findByMemberIdAndBankCodeAndAccountNumber(
-        long memberId,
+        Long memberId,
         String bankCode,
         String accountNumber
     ) {
       return Optional.empty();
+    }
+
+    @Override
+    public AccountModel updateBalance(AccountIdentifier identifier, Long balance) {
+      return null;
     }
 
     @Override
@@ -102,6 +113,11 @@ class AccountDeleteServiceIntegrationTest {
     @Override
     public String accountName() {
       return "name";
+    }
+
+    @Override
+    public BigDecimal balance() {
+      return BigDecimal.ZERO;
     }
   }
 }

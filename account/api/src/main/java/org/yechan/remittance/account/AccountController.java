@@ -1,6 +1,7 @@
 package org.yechan.remittance.account;
 
 import jakarta.validation.Valid;
+import java.math.BigDecimal;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -46,6 +47,11 @@ record AccountController(
       String accountNumber,
       String accountName
   ) implements AccountProps {
+
+    @Override
+    public BigDecimal balance() {
+      return BigDecimal.valueOf(0L);
+    }
 
   }
 

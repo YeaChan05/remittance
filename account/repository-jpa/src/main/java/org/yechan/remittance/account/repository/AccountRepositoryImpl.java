@@ -26,13 +26,25 @@ public class AccountRepositoryImpl implements AccountRepository {
   }
 
   @Override
+  public Optional<AccountModel> findByIdForUpdate(AccountIdentifier identifier) {
+    return repository.findByIdForUpdate(identifier.accountId())
+        .map(account -> account);
+  }
+
+  @Override
   public Optional<AccountModel> findByMemberIdAndBankCodeAndAccountNumber(
-      long memberId,
+      Long memberId,
       String bankCode,
       String accountNumber
   ) {
     return repository.findByMemberIdAndBankCodeAndAccountNumber(memberId, bankCode, accountNumber)
         .map(account -> account);
+  }
+
+  @Override
+  public AccountModel updateBalance(AccountIdentifier identifier, Long balance) {
+    repository.updateBalance(identifier.accountId(), balance);
+    return repository.findById(identifier.accountId()).orElseThrow();
   }
 
   @Override

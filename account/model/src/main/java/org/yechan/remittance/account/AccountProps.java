@@ -1,5 +1,7 @@
 package org.yechan.remittance.account;
 
+import java.math.BigDecimal;
+
 public interface AccountProps {
 
   Long memberId();
@@ -9,4 +11,6 @@ public interface AccountProps {
   String accountNumber();
 
   String accountName();
+
+  BigDecimal balance();
 }

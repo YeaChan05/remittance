@@ -8,11 +8,15 @@ public interface AccountRepository {
 
   Optional<AccountModel> findById(AccountIdentifier identifier);
 
+  Optional<AccountModel> findByIdForUpdate(AccountIdentifier identifier);
+
   Optional<AccountModel> findByMemberIdAndBankCodeAndAccountNumber(
-      long memberId,
+      Long memberId,
       String bankCode,
       String accountNumber
   );
+
+  AccountModel updateBalance(AccountIdentifier identifier, Long balance);
 
   void delete(AccountIdentifier identifier);
 }
