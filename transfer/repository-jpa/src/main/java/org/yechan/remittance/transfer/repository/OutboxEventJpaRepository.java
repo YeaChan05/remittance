@@ -26,11 +26,10 @@ interface OutboxEventJpaRepository extends JpaRepository<OutboxEventEntity, Long
   @Modifying(clearAutomatically = true, flushAutomatically = true)
   @Query("""
       update OutboxEventEntity o
-      set o.status = :status
+      set o.status = org.yechan.remittance.transfer.OutboxEventProps.OutboxEventStatusValue.SENT
       where o.id = :eventId
       """)
   int markSent(
-      @Param("eventId") Long eventId,
-      @Param("status") OutboxEventStatusValue status
+      @Param("eventId") Long eventId
   );
 }

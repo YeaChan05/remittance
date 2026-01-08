@@ -74,7 +74,7 @@ class OutboxEventJpaRepositoryTest {
     var e1 = saveOutboxEvent(OutboxEventStatusValue.NEW);
     flushClear();
 
-    int updated = repository.markSent(e1.eventId(), OutboxEventStatusValue.SENT);
+    int updated = repository.markSent(e1.eventId());
     flushClear();
 
     assertThat(updated).isEqualTo(1);

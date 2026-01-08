@@ -34,6 +34,6 @@ public class OutboxEventRepositoryImpl implements OutboxEventRepository {
 
   @Override
   public void markSent(OutboxEventIdentifier identifier) {
-    repository.markSent(identifier.eventId(), OutboxEventStatusValue.SENT);
+    repository.markSent(identifier.eventId());
   }
 }
