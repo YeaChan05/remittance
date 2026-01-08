@@ -6,6 +6,7 @@ import org.springframework.boot.persistence.autoconfigure.EntityScan;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.yechan.remittance.transfer.IdempotencyKeyRepository;
+import org.yechan.remittance.transfer.OutboxEventRepository;
 import org.yechan.remittance.transfer.TransferRepository;
 
 @AutoConfiguration(before = DataJpaRepositoriesAutoConfiguration.class)
@@ -15,7 +16,7 @@ import org.yechan.remittance.transfer.TransferRepository;
     OutboxEventEntity.class
 })
 @EnableJpaRepositories(basePackageClasses = IdempotencyKeyJpaRepository.class)
-public class IdempotencyKeyRepositoryAutoConfiguration {
+public class TransferRepositoryAutoConfiguration {
 
   @Bean
   IdempotencyKeyRepository idempotencyKeyRepository(IdempotencyKeyJpaRepository repository) {
@@ -25,5 +26,10 @@ public class IdempotencyKeyRepositoryAutoConfiguration {
   @Bean
   TransferRepository transferRepository(TransferJpaRepository repository) {
     return new TransferRepositoryImpl(repository);
+  }
+
+  @Bean
+  OutboxEventRepository outboxEventRepository(OutboxEventJpaRepository repository) {
+    return new OutboxEventRepositoryImpl(repository);
   }
 }

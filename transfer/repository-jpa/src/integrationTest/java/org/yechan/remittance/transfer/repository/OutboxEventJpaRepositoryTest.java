@@ -20,7 +20,7 @@ import org.yechan.remittance.transfer.OutboxEventProps.OutboxEventStatusValue;
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-@Import(IdempotencyKeyRepositoryAutoConfiguration.class)
+@Import(TransferRepositoryAutoConfiguration.class)
 @ContextConfiguration(classes = TestApplication.class)
 @TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
 class OutboxEventJpaRepositoryTest {
