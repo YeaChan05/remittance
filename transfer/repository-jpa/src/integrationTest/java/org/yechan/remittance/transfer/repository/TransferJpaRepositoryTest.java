@@ -3,7 +3,8 @@ package org.yechan.remittance.transfer.repository;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import jakarta.persistence.EntityManager;
-import java.time.Instant;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
 import org.junit.jupiter.api.Test;
@@ -44,7 +45,7 @@ class TransferJpaRepositoryTest {
 
   @Test
   void findCompletedByAccountIdFiltersAndOrders() {
-    Instant now = Instant.parse("2026-02-01T00:00:00Z");
+    LocalDateTime now = LocalDateTime.parse("2026-02-01T00:00:00");
     saveTransfer(1L, 2L, TransferStatusValue.SUCCEEDED, now.minusSeconds(120));
     saveTransfer(3L, 1L, TransferStatusValue.FAILED, now.minusSeconds(30));
     saveTransfer(1L, 4L, TransferStatusValue.IN_PROGRESS, null);
@@ -68,7 +69,7 @@ class TransferJpaRepositoryTest {
 
   @Test
   void findCompletedByAccountIdRespectsLimitAndRange() {
-    Instant now = Instant.parse("2026-02-02T00:00:00Z");
+    LocalDateTime now = LocalDateTime.parse("2026-02-02T00:00:00");
     saveTransfer(1L, 2L, TransferStatusValue.SUCCEEDED, now.minusSeconds(100));
     saveTransfer(1L, 3L, TransferStatusValue.SUCCEEDED, now.minusSeconds(50));
     saveTransfer(1L, 4L, TransferStatusValue.SUCCEEDED, now.minusSeconds(10));
@@ -90,14 +91,14 @@ class TransferJpaRepositoryTest {
       Long fromAccountId,
       Long toAccountId,
       TransferStatusValue status,
-      Instant completedAt
+      LocalDateTime completedAt
   ) {
     repository.save(
         TransferEntity.create(new TestTransferProps(
             fromAccountId,
             toAccountId,
             status,
-            completedAt == null ? Instant.parse("2026-02-01T00:00:00Z") : completedAt,
+            completedAt == null ? LocalDateTime.parse("2026-02-01T00:00:00") : completedAt,
             completedAt
         ))
     );
@@ -112,13 +113,13 @@ class TransferJpaRepositoryTest {
       Long fromAccountId,
       Long toAccountId,
       TransferStatusValue status,
-      Instant requestedAt,
-      Instant completedAt
+      LocalDateTime requestedAt,
+      LocalDateTime completedAt
   ) implements TransferProps {
 
     @Override
-    public Long amount() {
-      return 1000L;
+    public BigDecimal amount() {
+      return BigDecimal.valueOf(1000L);
     }
 
     @Override

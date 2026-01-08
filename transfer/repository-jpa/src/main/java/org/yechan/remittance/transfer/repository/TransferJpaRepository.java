@@ -1,6 +1,6 @@
 package org.yechan.remittance.transfer.repository;
 
-import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -21,8 +21,8 @@ interface TransferJpaRepository extends JpaRepository<TransferEntity, Long> {
   List<TransferEntity> findCompletedByAccountId(
       @Param("accountId") Long accountId,
       @Param("statuses") List<TransferStatusValue> statuses,
-      @Param("from") Instant from,
-      @Param("to") Instant to,
+      @Param("from") LocalDateTime from,
+      @Param("to") LocalDateTime to,
       Pageable pageable
   );
 }

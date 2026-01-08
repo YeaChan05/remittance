@@ -4,7 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.Clock;
 import java.time.Duration;
-import java.time.Instant;
+import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
@@ -18,8 +18,8 @@ class IdempotencyKeyServiceTest {
   void createsIdempotencyKeyWithExpiration() {
     var saved = new AtomicReference<IdempotencyKeyProps>();
     IdempotencyKeyRepository repository = new TestIdempotencyKeyRepository(saved);
-    Instant now = Instant.parse("2026-01-01T00:00:00Z");
-    Clock clock = Clock.fixed(now, ZoneOffset.UTC);
+    LocalDateTime now = LocalDateTime.parse("2026-01-01T00:00:00");
+    Clock clock = Clock.fixed(now.toInstant(ZoneOffset.UTC), ZoneOffset.UTC);
     var properties = new IdempotencyKeyProperties(Duration.ofHours(1));
     var service = new IdempotencyKeyService(repository, clock, properties);
 
@@ -81,7 +81,7 @@ class IdempotencyKeyServiceTest {
           IdempotencyScopeValue scope,
           String idempotencyKey,
           String requestHash,
-          Instant startedAt
+          LocalDateTime startedAt
       ) {
         return false;
       }
@@ -92,7 +92,7 @@ class IdempotencyKeyServiceTest {
           IdempotencyScopeValue scope,
           String idempotencyKey,
           String responseSnapshot,
-          Instant completedAt
+          LocalDateTime completedAt
       ) {
         throw new UnsupportedOperationException();
       }
@@ -103,13 +103,13 @@ class IdempotencyKeyServiceTest {
           IdempotencyScopeValue scope,
           String idempotencyKey,
           String responseSnapshot,
-          Instant completedAt
+          LocalDateTime completedAt
       ) {
         throw new UnsupportedOperationException();
       }
 
       @Override
-      public int markTimeoutBefore(Instant cutoff, String responseSnapshot) {
+      public int markTimeoutBefore(LocalDateTime cutoff, String responseSnapshot) {
         return 0;
       }
     }

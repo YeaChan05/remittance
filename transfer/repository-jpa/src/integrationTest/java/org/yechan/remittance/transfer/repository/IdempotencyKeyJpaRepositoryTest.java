@@ -4,7 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import jakarta.persistence.EntityManager;
 import java.time.Duration;
-import java.time.Instant;
+import java.time.LocalDateTime;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
@@ -37,7 +37,7 @@ class IdempotencyKeyJpaRepositoryTest {
 
   @Test
   void markInProgressUpdatesOnlyWhenBeforeStart() {
-    Instant now = Instant.parse("2026-01-01T00:00:00Z");
+    LocalDateTime now = LocalDateTime.parse("2026-01-01T00:00:00");
     IdempotencyKeyEntity saved = saveIdempotencyKey(now, 10L, "idem-key");
     flushClear();
 
@@ -73,7 +73,7 @@ class IdempotencyKeyJpaRepositoryTest {
 
   @Test
   void markSucceededUpdatesSnapshotAndCompletedAt() {
-    Instant now = Instant.parse("2026-01-02T00:00:00Z");
+    LocalDateTime now = LocalDateTime.parse("2026-01-02T00:00:00");
     IdempotencyKeyEntity saved = saveIdempotencyKey(now, 20L, "idem-succeed");
     flushClear();
 
@@ -106,7 +106,7 @@ class IdempotencyKeyJpaRepositoryTest {
 
   @Test
   void markFailedUpdatesSnapshotAndCompletedAt() {
-    Instant now = Instant.parse("2026-01-03T00:00:00Z");
+    LocalDateTime now = LocalDateTime.parse("2026-01-03T00:00:00");
     IdempotencyKeyEntity saved = saveIdempotencyKey(now, 30L, "idem-failed");
     flushClear();
 
@@ -144,7 +144,7 @@ class IdempotencyKeyJpaRepositoryTest {
 
   @Test
   void markTimeoutBeforeMovesOldInProgressToTimeout() {
-    Instant now = Instant.parse("2026-01-04T00:00:00Z");
+    LocalDateTime now = LocalDateTime.parse("2026-01-04T00:00:00");
     IdempotencyKeyEntity saved = saveIdempotencyKey(now, 40L, "idem-timeout");
     flushClear();
 
@@ -176,7 +176,7 @@ class IdempotencyKeyJpaRepositoryTest {
   }
 
   private IdempotencyKeyEntity saveIdempotencyKey(
-      Instant now,
+      LocalDateTime now,
       Long memberId,
       String idempotencyKey
   ) {
@@ -185,7 +185,7 @@ class IdempotencyKeyJpaRepositoryTest {
   }
 
   private record TestIdempotencyKeyProps(
-      Long memberId, String idempotencyKey, Instant now
+      Long memberId, String idempotencyKey, LocalDateTime now
   ) implements IdempotencyKeyProps {
 
     @Override
@@ -199,7 +199,7 @@ class IdempotencyKeyJpaRepositoryTest {
     }
 
     @Override
-    public Instant expiresAt() {
+    public LocalDateTime expiresAt() {
       return now.plus(Duration.ofMinutes(20));
     }
 
@@ -224,12 +224,12 @@ class IdempotencyKeyJpaRepositoryTest {
     }
 
     @Override
-    public Instant startedAt() {
+    public LocalDateTime startedAt() {
       return null;
     }
 
     @Override
-    public Instant completedAt() {
+    public LocalDateTime completedAt() {
       return null;
     }
   }

@@ -6,6 +6,7 @@ import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import org.yechan.remittance.BaseEntity;
 import org.yechan.remittance.transfer.LedgerModel;
@@ -30,7 +31,7 @@ public class LedgerEntity extends BaseEntity implements LedgerModel {
   private Long accountId;
 
   @Column(nullable = false)
-  private Long amount;
+  private BigDecimal amount;
 
   @Enumerated(EnumType.STRING)
   @Column(nullable = false)
@@ -42,7 +43,7 @@ public class LedgerEntity extends BaseEntity implements LedgerModel {
   private LedgerEntity(
       Long transferId,
       Long accountId,
-      Long amount,
+      BigDecimal amount,
       LedgerSideValue side
   ) {
     this.transferId = transferId;
@@ -76,7 +77,7 @@ public class LedgerEntity extends BaseEntity implements LedgerModel {
   }
 
   @Override
-  public Long amount() {
+  public BigDecimal amount() {
     return amount;
   }
 

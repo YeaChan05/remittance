@@ -3,14 +3,14 @@ package org.yechan.remittance.transfer;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-import java.time.Instant;
+import java.time.LocalDateTime;
 import org.junit.jupiter.api.Test;
 
 class IdempotencyKeyControllerTest {
 
   @Test
   void createIdempotencyKeyReturnsResponse() {
-    Instant expiresAt = Instant.parse("2024-01-01T01:00:00Z");
+    LocalDateTime expiresAt = LocalDateTime.parse("2026-01-01T01:00:00");
     IdempotencyKeyCreateUseCase useCase = props -> new TestIdempotencyKeyModel(expiresAt);
 
     var controller = new IdempotencyKeyController(useCase);
@@ -22,7 +22,7 @@ class IdempotencyKeyControllerTest {
     assertEquals(expiresAt, response.getBody().expiresAt());
   }
 
-  private record TestIdempotencyKeyModel(Instant expiresAt) implements IdempotencyKeyModel {
+  private record TestIdempotencyKeyModel(LocalDateTime expiresAt) implements IdempotencyKeyModel {
 
     @Override
       public Long idempotencyKeyId() {
@@ -60,12 +60,12 @@ class IdempotencyKeyControllerTest {
       }
 
       @Override
-      public Instant startedAt() {
+      public LocalDateTime startedAt() {
         return null;
       }
 
       @Override
-      public Instant completedAt() {
+      public LocalDateTime completedAt() {
         return null;
       }
     }

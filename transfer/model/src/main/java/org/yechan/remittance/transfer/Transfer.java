@@ -1,16 +1,17 @@
 package org.yechan.remittance.transfer;
 
-import java.time.Instant;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 public record Transfer(
     Long transferId,
     Long fromAccountId,
     Long toAccountId,
-    Long amount,
+    BigDecimal amount,
     TransferScopeValue scope,
     TransferStatusValue status,
-    Instant requestedAt,
-    Instant completedAt
+    LocalDateTime requestedAt,
+    LocalDateTime completedAt
 ) implements TransferModel {
 
 }

@@ -6,7 +6,7 @@ import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
-import java.time.Instant;
+import java.time.LocalDateTime;
 import org.yechan.remittance.BaseEntity;
 import org.yechan.remittance.transfer.IdempotencyKeyModel;
 import org.yechan.remittance.transfer.IdempotencyKeyProps;
@@ -30,7 +30,7 @@ public class IdempotencyKeyEntity extends BaseEntity implements IdempotencyKeyMo
   private String idempotencyKey;
 
   @Column(nullable = false)
-  private Instant expiresAt;
+  private LocalDateTime expiresAt;
 
   @Enumerated(EnumType.STRING)
   @Column(name = "scope", nullable = false)
@@ -47,10 +47,10 @@ public class IdempotencyKeyEntity extends BaseEntity implements IdempotencyKeyMo
   private String responseSnapshot;
 
   @Column
-  private Instant startedAt;
+  private LocalDateTime startedAt;
 
   @Column
-  private Instant completedAt;
+  private LocalDateTime completedAt;
 
   protected IdempotencyKeyEntity() {
   }
@@ -58,7 +58,7 @@ public class IdempotencyKeyEntity extends BaseEntity implements IdempotencyKeyMo
   private IdempotencyKeyEntity(
       Long memberId,
       String idempotencyKey,
-      Instant expiresAt,
+      LocalDateTime expiresAt,
       IdempotencyScopeValue scope
   ) {
     this.memberId = memberId;
@@ -92,7 +92,7 @@ public class IdempotencyKeyEntity extends BaseEntity implements IdempotencyKeyMo
   }
 
   @Override
-  public Instant expiresAt() {
+  public LocalDateTime expiresAt() {
     return expiresAt;
   }
 
@@ -117,12 +117,12 @@ public class IdempotencyKeyEntity extends BaseEntity implements IdempotencyKeyMo
   }
 
   @Override
-  public Instant startedAt() {
+  public LocalDateTime startedAt() {
     return startedAt;
   }
 
   @Override
-  public Instant completedAt() {
+  public LocalDateTime completedAt() {
     return completedAt;
   }
 

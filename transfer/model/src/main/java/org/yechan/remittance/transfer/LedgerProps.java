@@ -1,5 +1,6 @@
 package org.yechan.remittance.transfer;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 public interface LedgerProps {
@@ -8,7 +9,7 @@ public interface LedgerProps {
 
   Long accountId();
 
-  Long amount();
+  BigDecimal amount();
 
   LedgerSideValue side();
 

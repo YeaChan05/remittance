@@ -1,6 +1,7 @@
 package org.yechan.remittance.transfer;
 
-import java.time.Instant;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 public interface TransferProps {
 
@@ -8,15 +9,15 @@ public interface TransferProps {
 
   Long toAccountId();
 
-  Long amount();
+  BigDecimal amount();
 
   TransferScopeValue scope();
 
   TransferStatusValue status();
 
-  Instant requestedAt();
+  LocalDateTime requestedAt();
 
-  Instant completedAt();
+  LocalDateTime completedAt();
 
   enum TransferScopeValue {
     DEPOSIT,

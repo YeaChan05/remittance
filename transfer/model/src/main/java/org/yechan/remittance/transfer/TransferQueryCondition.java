@@ -1,10 +1,10 @@
 package org.yechan.remittance.transfer;
 
-import java.time.Instant;
+import java.time.LocalDateTime;
 
 public record TransferQueryCondition(
-    Instant from,
-    Instant to,
+    LocalDateTime from,
+    LocalDateTime to,
     Integer limit
 ) {
 

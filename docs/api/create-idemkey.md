@@ -30,7 +30,7 @@ Authorization: `Bearer {access_token}`
 ```json
 {
   "idempotencyKey": "3f9c2b1e-8b2a-4c7d-9a4e-6a9d8c2f1e44",
-  "expiresAt": "2026-01-08T10:30:00Z"
+  "expiresAt": "2026-01-08T10:30:00"
 }
 ```
 

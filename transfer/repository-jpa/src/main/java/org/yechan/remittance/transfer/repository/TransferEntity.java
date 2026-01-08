@@ -5,7 +5,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.Table;
-import java.time.Instant;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import org.yechan.remittance.BaseEntity;
 import org.yechan.remittance.transfer.TransferModel;
 import org.yechan.remittance.transfer.TransferProps;
@@ -21,7 +22,7 @@ public class TransferEntity extends BaseEntity implements TransferModel {
   private Long toAccountId;
 
   @Column(nullable = false)
-  private Long amount;
+  private BigDecimal amount;
 
   @Enumerated(EnumType.STRING)
   @Column(nullable = false)
@@ -32,10 +33,10 @@ public class TransferEntity extends BaseEntity implements TransferModel {
   private TransferStatusValue status;
 
   @Column(nullable = false)
-  private Instant requestedAt;
+  private LocalDateTime requestedAt;
 
   @Column
-  private Instant completedAt;
+  private LocalDateTime completedAt;
 
   protected TransferEntity() {
   }
@@ -43,17 +44,17 @@ public class TransferEntity extends BaseEntity implements TransferModel {
   private TransferEntity(
       Long fromAccountId,
       Long toAccountId,
-      Long amount,
+      BigDecimal amount,
       TransferScopeValue scope,
       TransferStatusValue status,
-      Instant completedAt
+      LocalDateTime completedAt
   ) {
     this.fromAccountId = fromAccountId;
     this.toAccountId = toAccountId;
     this.amount = amount;
     this.scope = scope;
     this.status = status;
-    this.requestedAt = Instant.now();
+    this.requestedAt = LocalDateTime.now();
     this.completedAt = completedAt;
   }
 
@@ -84,7 +85,7 @@ public class TransferEntity extends BaseEntity implements TransferModel {
   }
 
   @Override
-  public Long amount() {
+  public BigDecimal amount() {
     return amount;
   }
 
@@ -99,12 +100,12 @@ public class TransferEntity extends BaseEntity implements TransferModel {
   }
 
   @Override
-  public Instant requestedAt() {
+  public LocalDateTime requestedAt() {
     return requestedAt;
   }
 
   @Override
-  public Instant completedAt() {
+  public LocalDateTime completedAt() {
     return completedAt;
   }
 }

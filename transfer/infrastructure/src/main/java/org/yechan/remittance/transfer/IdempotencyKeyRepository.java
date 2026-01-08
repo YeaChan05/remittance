@@ -1,6 +1,6 @@
 package org.yechan.remittance.transfer;
 
-import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.Optional;
 import org.yechan.remittance.transfer.IdempotencyKeyProps.IdempotencyScopeValue;
 
@@ -24,7 +24,7 @@ public interface IdempotencyKeyRepository {
       IdempotencyScopeValue scope,
       String idempotencyKey,
       String requestHash,
-      Instant startedAt
+      LocalDateTime startedAt
   );
 
   IdempotencyKeyModel markSucceeded(
@@ -32,7 +32,7 @@ public interface IdempotencyKeyRepository {
       IdempotencyScopeValue scope,
       String idempotencyKey,
       String responseSnapshot,
-      Instant completedAt
+      LocalDateTime completedAt
   );
 
   IdempotencyKeyModel markFailed(
@@ -40,8 +40,8 @@ public interface IdempotencyKeyRepository {
       IdempotencyScopeValue scope,
       String idempotencyKey,
       String responseSnapshot,
-      Instant completedAt
+      LocalDateTime completedAt
   );
 
-  int markTimeoutBefore(Instant cutoff, String responseSnapshot);
+  int markTimeoutBefore(LocalDateTime cutoff, String responseSnapshot);
 }

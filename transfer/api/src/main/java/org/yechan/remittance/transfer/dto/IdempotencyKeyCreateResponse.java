@@ -1,10 +1,10 @@
 package org.yechan.remittance.transfer.dto;
 
-import java.time.Instant;
+import java.time.LocalDateTime;
 
 public record IdempotencyKeyCreateResponse(
     String idempotencyKey,
-    Instant expiresAt
+    LocalDateTime expiresAt
 ) {
 
 }

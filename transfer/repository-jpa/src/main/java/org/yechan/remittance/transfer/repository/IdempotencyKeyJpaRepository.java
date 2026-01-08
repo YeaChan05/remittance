@@ -1,6 +1,6 @@
 package org.yechan.remittance.transfer.repository;
 
-import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -37,7 +37,7 @@ interface IdempotencyKeyJpaRepository extends JpaRepository<IdempotencyKeyEntity
       @Param("scope") IdempotencyScopeValue scope,
       @Param("idempotencyKey") String idempotencyKey,
       @Param("requestHash") String requestHash,
-      @Param("startedAt") Instant startedAt
+      @Param("startedAt") LocalDateTime startedAt
   );
 
   @Modifying
@@ -55,7 +55,7 @@ interface IdempotencyKeyJpaRepository extends JpaRepository<IdempotencyKeyEntity
       @Param("scope") IdempotencyScopeValue scope,
       @Param("idempotencyKey") String idempotencyKey,
       @Param("responseSnapshot") String responseSnapshot,
-      @Param("completedAt") Instant completedAt
+      @Param("completedAt") LocalDateTime completedAt
   );
 
   @Modifying
@@ -73,7 +73,7 @@ interface IdempotencyKeyJpaRepository extends JpaRepository<IdempotencyKeyEntity
       @Param("scope") IdempotencyScopeValue scope,
       @Param("idempotencyKey") String idempotencyKey,
       @Param("responseSnapshot") String responseSnapshot,
-      @Param("completedAt") Instant completedAt
+      @Param("completedAt") LocalDateTime completedAt
   );
 
   @Modifying
@@ -86,8 +86,8 @@ interface IdempotencyKeyJpaRepository extends JpaRepository<IdempotencyKeyEntity
          and startedAt < :cutoff
       """)
   Integer markTimeoutBefore(
-      @Param("cutoff") Instant cutoff,
+      @Param("cutoff") LocalDateTime cutoff,
       @Param("responseSnapshot") String responseSnapshot,
-      @Param("completedAt") Instant completedAt
+      @Param("completedAt") LocalDateTime completedAt
   );
 }

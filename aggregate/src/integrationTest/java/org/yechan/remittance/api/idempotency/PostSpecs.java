@@ -2,7 +2,7 @@ package org.yechan.remittance.api.idempotency;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.UUID;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,7 +50,7 @@ public class PostSpecs {
 
     assertThat(loginResponse).isNotNull();
     assertThat(loginResponse.accessToken()).isNotBlank();
-    Instant before = Instant.now();
+    LocalDateTime before = LocalDateTime.now();
 
     var authentication = tokenVerifier.verify(loginResponse.accessToken());
     SecurityContextHolder.getContext().setAuthentication(authentication);

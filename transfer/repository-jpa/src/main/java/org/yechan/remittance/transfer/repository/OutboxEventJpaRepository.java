@@ -1,6 +1,6 @@
 package org.yechan.remittance.transfer.repository;
 
-import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -19,7 +19,7 @@ interface OutboxEventJpaRepository extends JpaRepository<OutboxEventEntity, Long
       """)
   List<OutboxEventEntity> findNewForPublish(
       @Param("status") OutboxEventStatusValue status,
-      @Param("before") Instant before,
+      @Param("before") LocalDateTime before,
       Pageable pageable
   );
 

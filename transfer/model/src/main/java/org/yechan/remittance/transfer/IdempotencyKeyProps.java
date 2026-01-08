@@ -1,6 +1,6 @@
 package org.yechan.remittance.transfer;
 
-import java.time.Instant;
+import java.time.LocalDateTime;
 
 public interface IdempotencyKeyProps {
 
@@ -8,7 +8,7 @@ public interface IdempotencyKeyProps {
 
   String idempotencyKey();
 
-  Instant expiresAt();
+  LocalDateTime expiresAt();
 
   IdempotencyScopeValue scope();
 
@@ -18,9 +18,9 @@ public interface IdempotencyKeyProps {
 
   String responseSnapshot();
 
-  Instant startedAt();
+  LocalDateTime startedAt();
 
-  Instant completedAt();
+  LocalDateTime completedAt();
 
   enum IdempotencyKeyStatusValue {
     BEFORE_START,

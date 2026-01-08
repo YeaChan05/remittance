@@ -2,7 +2,7 @@ package org.yechan.remittance.transfer;
 
 import java.time.Clock;
 import java.time.Duration;
-import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 public interface IdempotencyKeyCreateUseCase {
@@ -37,7 +37,7 @@ class IdempotencyKeyService implements IdempotencyKeyCreateUseCase {
 
   @Override
   public IdempotencyKeyModel create(IdempotencyKeyCreateProps props) {
-    var now = Instant.now(clock);
+    var now = LocalDateTime.now(clock);
     var key = UUID.randomUUID().toString();
     return repository.save(new GeneratedIdempotencyKeyProps(props, key, now));
   }
@@ -46,9 +46,9 @@ class IdempotencyKeyService implements IdempotencyKeyCreateUseCase {
 
     private final IdempotencyKeyCreateProps props;
     private final String key;
-    private final Instant now;
+    private final LocalDateTime now;
 
-    public GeneratedIdempotencyKeyProps(IdempotencyKeyCreateProps props, String key, Instant now) {
+    public GeneratedIdempotencyKeyProps(IdempotencyKeyCreateProps props, String key, LocalDateTime now) {
       this.props = props;
       this.key = key;
       this.now = now;
@@ -65,7 +65,7 @@ class IdempotencyKeyService implements IdempotencyKeyCreateUseCase {
     }
 
     @Override
-    public Instant expiresAt() {
+    public LocalDateTime expiresAt() {
       return now.plus(expiresIn);
     }
 
@@ -90,12 +90,12 @@ class IdempotencyKeyService implements IdempotencyKeyCreateUseCase {
     }
 
     @Override
-    public Instant startedAt() {
+    public LocalDateTime startedAt() {
       return null;
     }
 
     @Override
-    public Instant completedAt() {
+    public LocalDateTime completedAt() {
       return null;
     }
   }

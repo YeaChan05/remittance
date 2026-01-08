@@ -1,12 +1,13 @@
 package org.yechan.remittance.transfer;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 public record Ledger(
     Long ledgerId,
     Long transferId,
     Long accountId,
-    Long amount,
+    BigDecimal amount,
     LedgerSideValue side,
     LocalDateTime createdAt
 ) implements LedgerModel {

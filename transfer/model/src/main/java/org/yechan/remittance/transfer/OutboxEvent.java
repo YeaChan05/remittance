@@ -1,6 +1,6 @@
 package org.yechan.remittance.transfer;
 
-import java.time.Instant;
+import java.time.LocalDateTime;
 
 public record OutboxEvent(
     Long eventId,
@@ -9,7 +9,7 @@ public record OutboxEvent(
     String eventType,
     String payload,
     OutboxEventStatusValue status,
-    Instant createdAt
+    LocalDateTime createdAt
 ) implements OutboxEventModel {
 
 }

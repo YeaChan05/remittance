@@ -1,6 +1,7 @@
 package org.yechan.remittance.transfer.repository;
 
-import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.LocalDateTime;
 import java.util.Optional;
 import org.yechan.remittance.transfer.IdempotencyKeyModel;
 import org.yechan.remittance.transfer.IdempotencyKeyProps;
@@ -44,7 +45,7 @@ public class IdempotencyKeyRepositoryImpl implements IdempotencyKeyRepository {
       IdempotencyScopeValue scope,
       String idempotencyKey,
       String requestHash,
-      Instant startedAt
+      LocalDateTime startedAt
   ) {
     return repository.markInProgress(memberId, scope, idempotencyKey, requestHash, startedAt) > 0;
   }
@@ -55,7 +56,7 @@ public class IdempotencyKeyRepositoryImpl implements IdempotencyKeyRepository {
       IdempotencyScopeValue scope,
       String idempotencyKey,
       String responseSnapshot,
-      Instant completedAt
+      LocalDateTime completedAt
   ) {
     repository.markSucceeded(memberId, scope, idempotencyKey, responseSnapshot, completedAt);
     return repository.findByMemberIdAndScopeAndIdempotencyKey(memberId, scope, idempotencyKey)
@@ -68,7 +69,7 @@ public class IdempotencyKeyRepositoryImpl implements IdempotencyKeyRepository {
       IdempotencyScopeValue scope,
       String idempotencyKey,
       String responseSnapshot,
-      Instant completedAt
+      LocalDateTime completedAt
   ) {
     repository.markFailed(memberId, scope, idempotencyKey, responseSnapshot, completedAt);
     return repository.findByMemberIdAndScopeAndIdempotencyKey(memberId, scope, idempotencyKey)
@@ -76,7 +77,7 @@ public class IdempotencyKeyRepositoryImpl implements IdempotencyKeyRepository {
   }
 
   @Override
-  public int markTimeoutBefore(Instant cutoff, String responseSnapshot) {
-    return repository.markTimeoutBefore(cutoff, responseSnapshot, Instant.now());
+  public int markTimeoutBefore(LocalDateTime cutoff, String responseSnapshot) {
+    return repository.markTimeoutBefore(cutoff, responseSnapshot, LocalDateTime.now());
   }
 }
