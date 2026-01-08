@@ -6,7 +6,7 @@ public interface OutboxEventRepository {
 
   OutboxEventModel save(OutboxEventProps props);
 
-  List<OutboxEventModel> findNewForPublish(Integer limit);
+  List<? extends OutboxEventModel> findNewForPublish(Integer limit);
 
   void markSent(OutboxEventIdentifier identifier);
 }
