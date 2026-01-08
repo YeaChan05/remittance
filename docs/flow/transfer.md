@@ -116,7 +116,7 @@ WHERE client_id = ?
 
 ## 4. 송금 처리 (트랜잭션 B)
 
-아래 단계는 단일 DB 트랜잭션으로 수행한다.
+### 4-1. TX1 (Transfer + Outbox)
 
 1. 계좌 잠금
 
@@ -127,7 +127,7 @@ WHERE client_id = ?
 3. 잔액 변경
 
     - from 감소 / to 증가
-4. 원장 기록
+4. Transfer 기록
 
     - transferId 생성
     - transfer insert
@@ -139,9 +139,20 @@ WHERE client_id = ?
 
     - `status = SUCCEEDED`
     - `response_snapshot` 저장
-7. 커밋
+7. TX1 커밋
 
     - 실패 시 전체 롤백 + `FAILED`
+
+### 4-2. TX2 (Ledger)
+
+1. 별도 트랜잭션 시작
+2. Ledger 기록
+
+    - `(transfer_id, account_id, side)` UNIQUE
+3. TX2 커밋
+
+    - 실패 시 TX2만 롤백
+    - Transfer는 성공 유지, Ledger는 재시도/보정 대상
 
 ---
 
@@ -271,13 +282,3 @@ CREATE TABLE integration.outbox_events (
   KEY idx_outbox_events_status_created_at (status, created_at)
 );
 ```
-
-### 10-3. processed_events
-
-```sql
-CREATE TABLE integration.processed_events (
-  event_id CHAR(36) PRIMARY KEY,
-  processed_at DATETIME(6) NOT NULL
-);
-```
-s
