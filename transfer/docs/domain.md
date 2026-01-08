@@ -2,7 +2,7 @@
 
 ---
 
-### Transfer
+### Ledger
 
 - 무엇이 일어났는가
 - 계좌 간 송금이라는 사건(비즈니스 사실)
@@ -18,7 +18,7 @@
 - 계좌별 금액 증감 기록(원장)
 - 잔액의 근거 데이터
 - 회계 관점의 진실(source of truth)
-- Transfer 하나가 여러 Transfer 기록을 만들 수 있음
+- Transfer 하나가 여러 Ledger 기록을 만들 수 있음
 - 도메인 핵심 개념 (core)
 
 ---
@@ -48,20 +48,21 @@
 
 ### 한 줄 요약
 
-- Transfer: 무슨 송금이 있었는지
-- Transfer: 돈이 어떻게 변했는지
+- Transfer: 무슨 **송금**이 있었는지
+- Ledger: **돈**이 어떻게 변했는지
 - Idempotency: 이 요청을 처리해도 되는지
 - Outbox: 그 사실을 밖에 제대로 알렸는지
 
 흐름 요약
 ```text
 요청
-tx
+tx1
  → Idempotency (중복 차단)
  → Transfer (사건 생성/식별)
- → Transfer (금액 변화 기록)
  → Outbox (이벤트 기록)
-tx commit
- → Outbox publish (외부 전달)
+tx1 commit
+tx2
+ → Ledger (금액 변화 기록)
+tx2 commit
 
 ```
