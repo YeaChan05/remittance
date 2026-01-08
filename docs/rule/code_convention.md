@@ -16,7 +16,7 @@
 
 - Aggregate Root
 
-    - `Domain`
+    - `DomainModel`
 - 내부 구성 요소
 
     - `DomainIdentity`
