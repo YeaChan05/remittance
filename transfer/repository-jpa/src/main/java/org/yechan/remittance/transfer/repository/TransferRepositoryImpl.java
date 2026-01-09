@@ -1,5 +1,7 @@
 package org.yechan.remittance.transfer.repository;
 
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.domain.PageRequest;
@@ -11,6 +13,7 @@ import org.yechan.remittance.transfer.TransferProps;
 import org.yechan.remittance.transfer.TransferProps.TransferStatusValue;
 import org.yechan.remittance.transfer.TransferQueryCondition;
 import org.yechan.remittance.transfer.TransferRepository;
+import org.yechan.remittance.transfer.TransferRequestProps;
 
 public class TransferRepositoryImpl implements TransferRepository {
 
@@ -26,8 +29,9 @@ public class TransferRepositoryImpl implements TransferRepository {
   }
 
   @Override
-  public TransferModel save(TransferProps props) {
-    return repository.save(TransferEntity.create(props));
+  public TransferModel save(TransferRequestProps props) {
+    var command = new TransferCreateCommand(props);
+    return repository.save(TransferEntity.create(command));
   }
 
   @Override
@@ -53,4 +57,42 @@ public class TransferRepositoryImpl implements TransferRepository {
         pageable
     );
   }
+
+  private record TransferCreateCommand(TransferRequestProps props) implements TransferProps {
+
+    @Override
+      public Long fromAccountId() {
+        return props.fromAccountId();
+      }
+
+      @Override
+      public Long toAccountId() {
+        return props.toAccountId();
+      }
+
+      @Override
+      public BigDecimal amount() {
+        return props.amount();
+      }
+
+      @Override
+      public TransferScopeValue scope() {
+        return TransferScopeValue.DEPOSIT;
+      }
+
+      @Override
+      public TransferStatusValue status() {
+        return TransferStatusValue.IN_PROGRESS;
+      }
+
+      @Override
+      public LocalDateTime requestedAt() {
+        return LocalDateTime.now();
+      }
+
+      @Override
+      public LocalDateTime completedAt() {
+        return null;
+      }
+    }
 }

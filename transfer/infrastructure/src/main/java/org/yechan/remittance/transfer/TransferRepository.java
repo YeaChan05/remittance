@@ -6,7 +6,7 @@ import org.yechan.remittance.account.AccountIdentifier;
 
 public interface TransferRepository {
 
-  TransferModel save(TransferProps props);
+  TransferModel save(TransferRequestProps props);
 
   Optional<TransferModel> findById(TransferIdentifier identifier);
 
