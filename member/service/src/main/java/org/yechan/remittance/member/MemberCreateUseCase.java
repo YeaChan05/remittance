@@ -22,8 +22,8 @@ class MemberService implements MemberCreateUseCase {
   public MemberModel register(MemberProps props) {
     // email duplication check
     memberRepository.findByEmail(props.email())
-        .ifPresent(email -> {
-          throw new MemberException("Email already exists: " + email);
+        .ifPresent(model -> {
+          throw new MemberException("Email already exists: " + props.email());
         });
     return memberRepository.save(new EncodedMemberProps(props));
   }
