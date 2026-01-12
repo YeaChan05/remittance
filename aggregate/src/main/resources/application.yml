@@ -9,10 +9,12 @@ spring:
     url: jdbc:mysql://localhost:3306/aggregate
     username: aggregate
     password: aggregate
+  flyway:
+    enabled: true
   jpa:
     database-platform: org.hibernate.dialect.MySQLDialect
     hibernate:
-      ddl-auto: create
+      ddl-auto: validate
   rabbitmq:
     host: localhost
     port: 5672

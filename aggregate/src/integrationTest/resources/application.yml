@@ -5,13 +5,15 @@ spring:
     url: jdbc:tc:mysql:8.0.36:///aggregate
     username: aggregate
     password: aggregate
+  flyway:
+    enabled: true
   jpa:
     properties:
       hibernate:
         jdbc:
           time_zone: UTC
     hibernate:
-      ddl-auto: create
+      ddl-auto: validate
 management:
   endpoints:
     web:
