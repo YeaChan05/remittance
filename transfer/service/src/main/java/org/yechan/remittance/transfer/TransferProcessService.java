@@ -57,7 +57,8 @@ class TransferProcessService {
   private AccountPair lockAccounts(TransferRequestProps props) {
     Long fromAccountId = props.fromAccountId();
     Long toAccountId = props.toAccountId();
-    if (props.scope() == TransferScopeValue.WITHDRAW) {
+    if (props.scope() == TransferScopeValue.WITHDRAW
+        || props.scope() == TransferScopeValue.DEPOSIT) {
       AccountModel fromAccount = getAccountForUpdate(fromAccountId);
       return new AccountPair(fromAccount, fromAccount);
     }
@@ -88,6 +89,10 @@ class TransferProcessService {
   }
 
   private void validateBalance(TransferRequestProps props, AccountPair accounts) {
+    if (props.scope() == TransferScopeValue.DEPOSIT) {
+      return;
+    }
+
     BigDecimal debitAmount = props.amount().add(props.fee());
     if (accounts.fromAccount().balance().compareTo(debitAmount) < 0) {
       throw new TransferFailedException(INSUFFICIENT_BALANCE, "Insufficient balance");
@@ -95,6 +100,9 @@ class TransferProcessService {
   }
 
   private void validateDailyLimit(TransferRequestProps props, LocalDateTime now) {
+    if (props.scope() == TransferScopeValue.DEPOSIT) {
+      return;
+    }
     LocalDateTime startOfDay = now.toLocalDate().atStartOfDay();
     LocalDateTime endOfDay = startOfDay.plusDays(1);
     BigDecimal used = transferRepository.sumAmountByFromAccountIdAndScopeBetween(
