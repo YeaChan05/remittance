@@ -1,12 +1,8 @@
 package org.yechan.remittance.account;
 
-class NotificationPushAdapter implements NotificationPushPort {
-
-  private final NotificationSessionRegistry registry;
-
-  NotificationPushAdapter(NotificationSessionRegistry registry) {
-    this.registry = registry;
-  }
+record NotificationPushAdapter(
+    NotificationSessionRegistry registry
+) implements NotificationPushPort {
 
   @Override
   public boolean push(Long memberId, TransferNotificationMessage message) {
