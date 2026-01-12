@@ -2,6 +2,7 @@ create schema if not exists core;
 create schema if not exists integration;
 
 drop table if exists core.account;
+drop table if exists core.daily_limit_usage;
 drop table if exists core.ledger;
 drop table if exists core.member;
 drop table if exists core.transfer;
@@ -18,6 +19,17 @@ create table core.account
     account_name   varchar(255)   not null,
     account_number varchar(255)   not null,
     bank_code      varchar(255)   not null,
+    primary key (id)
+) engine = InnoDB;
+create table core.daily_limit_usage
+(
+    account_id  bigint                                    not null,
+    usage_date  date                                      not null,
+    used_amount decimal(38, 2)                            not null,
+    created_at  datetime(6),
+    id          bigint                                    not null,
+    updated_at  datetime(6),
+    scope       enum ('DEPOSIT','REFUND','TRANSFER','WITHDRAW') not null,
     primary key (id)
 ) engine = InnoDB;
 create table core.ledger
@@ -57,6 +69,9 @@ create table core.transfer
 ) engine = InnoDB;
 alter table core.ledger
     add constraint uk_ledger_transfer_account_side unique (transfer_id, account_id, side);
+alter table core.daily_limit_usage
+    add constraint uk_daily_limit_usage_account_scope_date
+        unique (account_id, scope, usage_date);
 alter table core.member
     add constraint UKmbmcqelty0fbrvxp1q58dn57t unique (email);
 create table integration.idempotency_key

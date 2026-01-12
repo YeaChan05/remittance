@@ -12,6 +12,8 @@ import java.time.LocalDateTime;
 import org.springframework.transaction.annotation.Transactional;
 import org.yechan.remittance.account.AccountModel;
 import org.yechan.remittance.account.AccountRepository;
+import org.yechan.remittance.transfer.DailyLimitUsageModel;
+import org.yechan.remittance.transfer.DailyLimitUsageRepository;
 import org.yechan.remittance.transfer.TransferProps.TransferScopeValue;
 
 class TransferProcessService {
@@ -25,17 +27,20 @@ class TransferProcessService {
   private final TransferRepository transferRepository;
   private final OutboxEventRepository outboxEventRepository;
   private final IdempotencyKeyRepository idempotencyKeyRepository;
+  private final DailyLimitUsageRepository dailyLimitUsageRepository;
 
   public TransferProcessService(
       AccountRepository accountRepository,
       TransferRepository transferRepository,
       OutboxEventRepository outboxEventRepository,
-      IdempotencyKeyRepository idempotencyKeyRepository
+      IdempotencyKeyRepository idempotencyKeyRepository,
+      DailyLimitUsageRepository dailyLimitUsageRepository
   ) {
     this.accountRepository = accountRepository;
     this.transferRepository = transferRepository;
     this.outboxEventRepository = outboxEventRepository;
     this.idempotencyKeyRepository = idempotencyKeyRepository;
+    this.dailyLimitUsageRepository = dailyLimitUsageRepository;
   }
 
   @Transactional
@@ -102,22 +107,22 @@ class TransferProcessService {
     if (props.scope() == TransferScopeValue.DEPOSIT) {
       return;
     }
-    LocalDateTime startOfDay = now.toLocalDate().atStartOfDay();
-    LocalDateTime endOfDay = startOfDay.plusDays(1);
-    BigDecimal used = transferRepository.sumAmountByFromAccountIdAndScopeBetween(
+    DailyLimitUsageModel usage = dailyLimitUsageRepository.findOrCreateForUpdate(
         props::fromAccountId,
         props.scope(),
-        startOfDay,
-        endOfDay
+        now.toLocalDate()
     );
 
     BigDecimal limit = props.scope() == TransferScopeValue.WITHDRAW
         ? WITHDRAW_DAILY_LIMIT
         : TRANSFER_DAILY_LIMIT;
 
-    if (used.add(props.amount()).compareTo(limit) > 0) {
+    BigDecimal nextUsed = usage.usedAmount().add(props.amount());
+    if (nextUsed.compareTo(limit) > 0) {
       throw new TransferFailedException(DAILY_LIMIT_EXCEEDED, "Daily limit exceeded");
     }
+
+    usage.updateUsedAmount(nextUsed);
   }
 
   private void updateBalances(TransferRequestProps props, AccountPair accounts) {
