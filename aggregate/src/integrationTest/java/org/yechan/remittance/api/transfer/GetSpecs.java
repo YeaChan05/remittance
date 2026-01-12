@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import jakarta.persistence.EntityManager;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.Comparator;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -21,6 +22,7 @@ import org.yechan.remittance.TransferTestFixtures;
 import org.yechan.remittance.TransferTestFixturesConfig;
 import org.yechan.remittance.transfer.dto.IdempotencyKeyCreateResponse;
 import org.yechan.remittance.transfer.dto.TransferQueryResponse;
+import org.yechan.remittance.transfer.dto.TransferQueryResponse.TransferItem;
 import org.yechan.remittance.transfer.dto.TransferRequest;
 
 @SpringBootTest(classes = AggregateApplication.class)
@@ -75,6 +77,7 @@ class GetSpecs extends TestContainerSetup {
     assertThat(response.transfers()).hasSize(2);
     assertThat(response.transfers().getFirst().transferId()).isEqualTo(secondResponse.transferId());
     assertThat(response.transfers().get(1).transferId()).isEqualTo(firstResponse.transferId());
+    assertThat(response.transfers()).isSortedAccordingTo(Comparator.comparing(TransferItem::completedAt));
   }
 
   @Test
