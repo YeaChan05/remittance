@@ -2,23 +2,15 @@ package org.yechan.remittance.account;
 
 import java.time.LocalDateTime;
 
-class TransferNotificationService implements TransferNotificationUseCase {
+record TransferNotificationService(
+    AccountRepository accountRepository,
+    ProcessedEventRepository processedEventRepository,
+    NotificationPushPort notificationPushPort
+) implements TransferNotificationUseCase {
 
   private static final String MESSAGE_TYPE = "TRANSFER_RECEIVED";
 
-  private final AccountRepository accountRepository;
-  private final ProcessedEventRepository processedEventRepository;
-  private final NotificationPushPort notificationPushPort;
 
-  TransferNotificationService(
-      AccountRepository accountRepository,
-      ProcessedEventRepository processedEventRepository,
-      NotificationPushPort notificationPushPort
-  ) {
-    this.accountRepository = accountRepository;
-    this.processedEventRepository = processedEventRepository;
-    this.notificationPushPort = notificationPushPort;
-  }
 
   @Override
   public void notify(TransferNotificationProps props) {

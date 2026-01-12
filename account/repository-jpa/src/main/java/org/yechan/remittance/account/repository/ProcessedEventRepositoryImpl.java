@@ -3,13 +3,9 @@ package org.yechan.remittance.account.repository;
 import java.time.LocalDateTime;
 import org.yechan.remittance.account.ProcessedEventRepository;
 
-class ProcessedEventRepositoryImpl implements ProcessedEventRepository {
-
-  private final ProcessedEventJpaRepository repository;
-
-  ProcessedEventRepositoryImpl(ProcessedEventJpaRepository repository) {
-    this.repository = repository;
-  }
+record ProcessedEventRepositoryImpl(
+    ProcessedEventJpaRepository repository
+) implements ProcessedEventRepository {
 
   @Override
   public boolean existsByEventId(Long eventId) {
