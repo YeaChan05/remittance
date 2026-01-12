@@ -83,8 +83,4 @@ public class AccountEntity extends BaseEntity implements AccountModel {
   public BigDecimal balance() {
     return balance;
   }
-
-  void updateBalance(BigDecimal balance) {
-    this.balance = balance;
-  }
 }
