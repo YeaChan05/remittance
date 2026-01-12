@@ -11,6 +11,7 @@ import org.yechan.remittance.transfer.TransferIdentifier;
 import org.yechan.remittance.transfer.TransferModel;
 import org.yechan.remittance.transfer.TransferProps;
 import org.yechan.remittance.transfer.TransferProps.TransferStatusValue;
+import org.yechan.remittance.transfer.TransferProps.TransferScopeValue;
 import org.yechan.remittance.transfer.TransferQueryCondition;
 import org.yechan.remittance.transfer.TransferRepository;
 import org.yechan.remittance.transfer.TransferRequestProps;
@@ -58,6 +59,22 @@ public class TransferRepositoryImpl implements TransferRepository {
     );
   }
 
+  @Override
+  public BigDecimal sumAmountByFromAccountIdAndScopeBetween(
+      AccountIdentifier identifier,
+      TransferScopeValue scope,
+      LocalDateTime from,
+      LocalDateTime to
+  ) {
+    return repository.sumAmountByFromAccountIdAndScopeBetween(
+        identifier.accountId(),
+        scope,
+        TransferStatusValue.SUCCEEDED,
+        from,
+        to
+    );
+  }
+
   private record TransferCreateCommand(TransferRequestProps props) implements TransferProps {
 
     @Override
@@ -77,12 +94,12 @@ public class TransferRepositoryImpl implements TransferRepository {
 
     @Override
     public TransferScopeValue scope() {
-      return TransferScopeValue.DEPOSIT;
+      return props.scope();
     }
 
     @Override
     public TransferStatusValue status() {
-      return TransferStatusValue.IN_PROGRESS;
+      return TransferStatusValue.SUCCEEDED;
     }
 
     @Override
@@ -92,7 +109,7 @@ public class TransferRepositoryImpl implements TransferRepository {
 
     @Override
     public LocalDateTime completedAt() {
-      return null;
+      return LocalDateTime.now();
     }
   }
 }
