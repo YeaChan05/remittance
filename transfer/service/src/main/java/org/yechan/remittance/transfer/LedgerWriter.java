@@ -20,6 +20,17 @@ public class LedgerWriter {
     if (result.transferId() == null) {
       return;
     }
+    if (props.scope() == TransferScopeValue.DEPOSIT) {
+      saveLedgerIfAbsent(
+          result.transferId(),
+          props.toAccountId(),
+          props.amount(),
+          LedgerSideValue.CREDIT,
+          now
+      );
+      return;
+    }
+
     BigDecimal debitAmount = props.amount().add(props.fee());
     saveLedgerIfAbsent(
         result.transferId(),
