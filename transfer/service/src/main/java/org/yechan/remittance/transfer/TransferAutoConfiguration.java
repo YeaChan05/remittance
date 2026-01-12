@@ -21,13 +21,15 @@ class TransferAutoConfiguration {
       AccountRepository accountRepository,
       TransferRepository transferRepository,
       OutboxEventRepository outboxEventRepository,
-      IdempotencyKeyRepository idempotencyKeyRepository
+      IdempotencyKeyRepository idempotencyKeyRepository,
+      LedgerRepository ledgerRepository
   ) {
     return new TransferProcessService(
         accountRepository,
         transferRepository,
         outboxEventRepository,
-        idempotencyKeyRepository
+        idempotencyKeyRepository,
+        ledgerRepository
     );
   }
 
