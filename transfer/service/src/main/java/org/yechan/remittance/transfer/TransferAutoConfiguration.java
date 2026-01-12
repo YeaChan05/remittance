@@ -37,6 +37,14 @@ class TransferAutoConfiguration {
   }
 
   @Bean
+  TransferQueryUseCase transferQueryUseCase(
+      AccountRepository accountRepository,
+      TransferRepository transferRepository
+  ) {
+    return new TransferQueryService(accountRepository, transferRepository);
+  }
+
+  @Bean
   TransferCreateUseCase transferCreateUseCase(
       TransferIdempotencyHandler idempotencyHandler,
       TransferProcessService transferProcessService,
