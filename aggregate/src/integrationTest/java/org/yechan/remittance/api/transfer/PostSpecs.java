@@ -393,7 +393,7 @@ public class PostSpecs extends TestContainerSetup {
     var idempotency = fixtures.loadIdempotencyKey(
         memberId,
         secondKey,
-        IdempotencyScopeValue.WITHDRAW
+        IdempotencyScopeValue.TRANSFER
     );
     assertThat(idempotency.status()).isEqualTo("FAILED");
     assertThat(idempotency.responseSnapshot()).contains("FAILED", "DAILY_LIMIT_EXCEEDED");
@@ -449,7 +449,11 @@ public class PostSpecs extends TestContainerSetup {
     assertThat(fixtures.countOutboxEvents()).isEqualTo(outboxCountBefore);
     assertThat(fixtures.countLedgers()).isEqualTo(ledgerCountBefore);
 
-    var idempotency = fixtures.loadIdempotencyKey(memberId, secondKey);
+    var idempotency = fixtures.loadIdempotencyKey(
+        memberId,
+        secondKey,
+        IdempotencyScopeValue.WITHDRAW
+    );
     assertThat(idempotency.status()).isEqualTo("FAILED");
     assertThat(idempotency.responseSnapshot()).contains("FAILED", "DAILY_LIMIT_EXCEEDED");
   }
