@@ -22,6 +22,7 @@ public interface TransferProps {
   enum TransferScopeValue {
     DEPOSIT,
     WITHDRAW,
+    TRANSFER,
     REFUND
   }
 
@@ -31,4 +32,3 @@ public interface TransferProps {
     FAILED
   }
 }
-

@@ -51,7 +51,7 @@ create table core.transfer
     requested_at    datetime(6)                               not null,
     to_account_id   bigint                                    not null,
     updated_at      datetime(6),
-    scope           enum ('DEPOSIT','REFUND','WITHDRAW')      not null,
+    scope           enum ('DEPOSIT','REFUND','WITHDRAW','TRANSFER') not null,
     status          enum ('FAILED','IN_PROGRESS','SUCCEEDED') not null,
     primary key (id)
 ) engine = InnoDB;
