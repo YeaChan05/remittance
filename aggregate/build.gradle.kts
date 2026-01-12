@@ -1,7 +1,6 @@
 dependencies {
     implementation(project(":common:security"))
 
-    implementation("org.flywaydb:flyway-core")
 
     implementation(project(":account:api"))
     implementation(project(":account:repository-jpa"))
@@ -28,7 +27,6 @@ dependencies {
         exclude(group = "com.google.protobuf", module = "protobuf-java")
     }
 
-    runtimeOnly("org.flywaydb:flyway-mysql:11.20.1")
 
     integrationTestRuntimeOnly("com.mysql:mysql-connector-j") {
         exclude(group = "com.google.protobuf", module = "protobuf-java")
