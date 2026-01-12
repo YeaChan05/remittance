@@ -13,11 +13,12 @@ import org.springframework.transaction.annotation.Transactional;
 import org.yechan.remittance.account.AccountModel;
 import org.yechan.remittance.account.AccountRepository;
 import org.yechan.remittance.transfer.IdempotencyKeyProps.IdempotencyScopeValue;
-import org.yechan.remittance.transfer.LedgerProps.LedgerSideValue;
+import org.yechan.remittance.transfer.TransferProps.TransferScopeValue;
 
 class TransferProcessService {
 
-  private static final BigDecimal DAILY_LIMIT = BigDecimal.valueOf(1_000_000);
+  private static final BigDecimal WITHDRAW_DAILY_LIMIT = BigDecimal.valueOf(1_000_000);
+  private static final BigDecimal TRANSFER_DAILY_LIMIT = BigDecimal.valueOf(3_000_000);
   private static final String AGGREGATE_TYPE = "TRANSFER";
   private static final String EVENT_TYPE = "TRANSFER_COMPLETED";
 
@@ -25,20 +26,17 @@ class TransferProcessService {
   private final TransferRepository transferRepository;
   private final OutboxEventRepository outboxEventRepository;
   private final IdempotencyKeyRepository idempotencyKeyRepository;
-  private final LedgerRepository ledgerRepository;
 
   public TransferProcessService(
       AccountRepository accountRepository,
       TransferRepository transferRepository,
       OutboxEventRepository outboxEventRepository,
-      IdempotencyKeyRepository idempotencyKeyRepository,
-      LedgerRepository ledgerRepository
+      IdempotencyKeyRepository idempotencyKeyRepository
   ) {
     this.accountRepository = accountRepository;
     this.transferRepository = transferRepository;
     this.outboxEventRepository = outboxEventRepository;
     this.idempotencyKeyRepository = idempotencyKeyRepository;
-    this.ledgerRepository = ledgerRepository;
   }
 
   @Transactional
@@ -59,6 +57,10 @@ class TransferProcessService {
   private AccountPair lockAccounts(TransferRequestProps props) {
     Long fromAccountId = props.fromAccountId();
     Long toAccountId = props.toAccountId();
+    if (props.scope() == TransferScopeValue.WITHDRAW) {
+      AccountModel fromAccount = getAccountForUpdate(fromAccountId);
+      return new AccountPair(fromAccount, fromAccount);
+    }
     if (fromAccountId.equals(toAccountId)) {
       throw new TransferFailedException(INVALID_REQUEST, "Same account");
     }
@@ -86,7 +88,8 @@ class TransferProcessService {
   }
 
   private void validateBalance(TransferRequestProps props, AccountPair accounts) {
-    if (accounts.fromAccount().balance().compareTo(props.amount()) < 0) {
+    BigDecimal debitAmount = props.amount().add(props.fee());
+    if (accounts.fromAccount().balance().compareTo(debitAmount) < 0) {
       throw new TransferFailedException(INSUFFICIENT_BALANCE, "Insufficient balance");
     }
   }
@@ -94,23 +97,32 @@ class TransferProcessService {
   private void validateDailyLimit(TransferRequestProps props, LocalDateTime now) {
     LocalDateTime startOfDay = now.toLocalDate().atStartOfDay();
     LocalDateTime endOfDay = startOfDay.plusDays(1);
-    BigDecimal used = ledgerRepository.sumAmountByAccountIdAndSideBetween(
-        props.fromAccountId(),
-        LedgerSideValue.DEBIT,
+    BigDecimal used = transferRepository.sumAmountByFromAccountIdAndScopeBetween(
+        props::fromAccountId,
+        props.scope(),
         startOfDay,
         endOfDay
     );
 
-    if (used.add(props.amount()).compareTo(DAILY_LIMIT) > 0) {
+    BigDecimal limit = props.scope() == TransferScopeValue.WITHDRAW
+        ? WITHDRAW_DAILY_LIMIT
+        : TRANSFER_DAILY_LIMIT;
+
+    if (used.add(props.amount()).compareTo(limit) > 0) {
       throw new TransferFailedException(DAILY_LIMIT_EXCEEDED, "Daily limit exceeded");
     }
   }
 
   private void updateBalances(TransferRequestProps props, AccountPair accounts) {
-    BigDecimal updatedFromBalance = accounts.fromAccount().balance().subtract(props.amount());
-    BigDecimal updatedToBalance = accounts.toAccount().balance().add(props.amount());
-
+    BigDecimal debitAmount = props.amount().add(props.fee());
+    BigDecimal updatedFromBalance = accounts.fromAccount().balance().subtract(debitAmount);
     accountRepository.updateBalance(() -> accounts.fromAccount().accountId(), updatedFromBalance);
+
+    if (props.scope() == TransferScopeValue.WITHDRAW) {
+      return;
+    }
+
+    BigDecimal updatedToBalance = accounts.toAccount().balance().add(props.amount());
     accountRepository.updateBalance(() -> accounts.toAccount().accountId(), updatedToBalance);
   }
 
@@ -121,7 +133,9 @@ class TransferProcessService {
       LocalDateTime now
   ) {
     TransferModel transfer = transferRepository.save(props);
-    outboxEventRepository.save(new OutboxEventCreateCommand(transfer, props, now));
+    if (props.scope() == TransferScopeValue.TRANSFER) {
+      outboxEventRepository.save(new OutboxEventCreateCommand(transfer, props, now));
+    }
 
     TransferResult result = TransferResult.succeeded(transfer.transferId());
     idempotencyKeyRepository.markSucceeded(
