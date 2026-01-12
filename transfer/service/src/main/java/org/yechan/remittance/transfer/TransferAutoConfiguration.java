@@ -2,6 +2,7 @@ package org.yechan.remittance.transfer;
 
 import java.time.Clock;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.context.annotation.Bean;
 import org.yechan.remittance.account.AccountRepository;
 
@@ -48,5 +49,14 @@ class TransferAutoConfiguration {
         ledgerWriter,
         clock
     );
+  }
+
+  @Bean
+  @ConditionalOnBean(TransferEventPublisher.class)
+  TransferEventPublishUseCase transferEventPublishUseCase(
+      OutboxEventRepository outboxEventRepository,
+      TransferEventPublisher transferEventPublisher
+  ) {
+    return new TransferEventPublishService(outboxEventRepository, transferEventPublisher);
   }
 }
