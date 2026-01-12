@@ -139,17 +139,27 @@ public class TransferTestFixtures {
   }
 
   public IdempotencyRow loadIdempotencyKey(Long memberId, String idempotencyKey) {
+    return loadIdempotencyKey(memberId, idempotencyKey,
+        org.yechan.remittance.transfer.IdempotencyKeyProps.IdempotencyScopeValue.TRANSFER);
+  }
+
+  public IdempotencyRow loadIdempotencyKey(
+      Long memberId,
+      String idempotencyKey,
+      org.yechan.remittance.transfer.IdempotencyKeyProps.IdempotencyScopeValue scope
+  ) {
     List<Object[]> rows = em.createQuery(
             """
                 select i.status, i.responseSnapshot
                   from IdempotencyKeyEntity i
                  where i.memberId = :memberId
-                   and i.scope = org.yechan.remittance.transfer.IdempotencyKeyProps$IdempotencyScopeValue.TRANSFER
+                   and i.scope = :scope
                    and i.idempotencyKey = :idempotencyKey
                 """,
             Object[].class
         )
         .setParameter("memberId", memberId)
+        .setParameter("scope", scope)
         .setParameter("idempotencyKey", idempotencyKey)
         .getResultList();
     if (rows.isEmpty()) {

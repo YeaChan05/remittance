@@ -15,7 +15,7 @@ class IdempotencyKeyControllerTest {
 
     var controller = new IdempotencyKeyController(useCase);
 
-    var response = controller.create(1L);
+    var response = controller.create(1L, null);
 
     assertNotNull(response.getBody());
     assertEquals("key", response.getBody().idempotencyKey());

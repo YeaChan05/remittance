@@ -28,6 +28,7 @@ import org.yechan.remittance.TransferTestFixtures;
 import org.yechan.remittance.TransferTestFixtures.LedgerRow;
 import org.yechan.remittance.TransferTestFixturesConfig;
 import org.yechan.remittance.account.AccountIdentifier;
+import org.yechan.remittance.transfer.IdempotencyKeyProps.IdempotencyScopeValue;
 import org.yechan.remittance.transfer.TransferIdentifier;
 import org.yechan.remittance.transfer.TransferModel;
 import org.yechan.remittance.transfer.TransferProps.TransferScopeValue;
@@ -78,7 +79,10 @@ public class PostSpecs extends TestContainerSetup {
 
     var fromAccount = fixtures.createAccountWithBalance(memberId, "출금", fromAccountBalance);
     var toAccount = fixtures.createAccountWithBalance(memberId, "입금", toAccountBalance);
-    var idempotencyKey = issueIdempotencyKey(result.auth().accessToken());
+    var idempotencyKey = issueIdempotencyKey(
+        result.auth().accessToken(),
+        IdempotencyScopeValue.TRANSFER
+    );
 
     var before = LocalDateTime.now();
 
@@ -118,7 +122,10 @@ public class PostSpecs extends TestContainerSetup {
 
     var fromAccount = fixtures.createAccountWithBalance(memberId, "출금", fromAccountBalance);
     var toAccount = fixtures.createAccountWithBalance(memberId, "입금", toAccountBalance);
-    var idempotencyKey = issueIdempotencyKey(result.auth().accessToken());
+    var idempotencyKey = issueIdempotencyKey(
+        result.auth().accessToken(),
+        IdempotencyScopeValue.TRANSFER
+    );
     var fee = feeFor(transferAmount);
 
     // Act
@@ -180,7 +187,10 @@ public class PostSpecs extends TestContainerSetup {
 
     var fromAccount = fixtures.createAccountWithBalance(memberId, "출금", fromAccountBalance);
     var toAccount = fixtures.createAccountWithBalance(memberId, "입금", toAccountBalance);
-    var idempotencyKey = issueIdempotencyKey(result.auth().accessToken());
+    var idempotencyKey = issueIdempotencyKey(
+        result.auth().accessToken(),
+        IdempotencyScopeValue.TRANSFER
+    );
 
     var firstResponse = transfer(
         result.auth().accessToken(),
@@ -241,7 +251,10 @@ public class PostSpecs extends TestContainerSetup {
 
     var fromAccount = fixtures.createAccountWithBalance(memberId, "출금", fromAccountBalance);
     var toAccount = fixtures.createAccountWithBalance(memberId, "입금", toAccountBalance);
-    var idempotencyKey = issueIdempotencyKey(result.auth().accessToken());
+    var idempotencyKey = issueIdempotencyKey(
+        result.auth().accessToken(),
+        IdempotencyScopeValue.TRANSFER
+    );
 
     var transferCountBefore = fixtures.countTransfers();
     var outboxCountBefore = fixtures.countOutboxEvents();
@@ -283,7 +296,10 @@ public class PostSpecs extends TestContainerSetup {
 
     var fromAccount = fixtures.createAccountWithBalance(memberId, "출금", fromAccountBalance);
     var toAccount = fixtures.createAccountWithBalance(memberId, "입금", toAccountBalance);
-    var idempotencyKey = issueIdempotencyKey(result.auth().accessToken());
+    var idempotencyKey = issueIdempotencyKey(
+        result.auth().accessToken(),
+        IdempotencyScopeValue.TRANSFER
+    );
 
     fixtures.markIdempotencyInProgress(memberId, idempotencyKey, LocalDateTime.now());
 
@@ -327,7 +343,10 @@ public class PostSpecs extends TestContainerSetup {
     var fromAccount = fixtures.createAccountWithBalance(memberId, "출금", fromAccountBalance);
     var toAccount = fixtures.createAccountWithBalance(memberId, "입금", toAccountBalance);
 
-    var firstKey = issueIdempotencyKey(result.auth().accessToken());
+    var firstKey = issueIdempotencyKey(
+        result.auth().accessToken(),
+        IdempotencyScopeValue.TRANSFER
+    );
     var firstResponse = transfer(
         result.auth().accessToken(),
         firstKey,
@@ -342,7 +361,10 @@ public class PostSpecs extends TestContainerSetup {
         .subtract(firstFee));
     assertBalance(toAccount.accountId(), firstAmount);
 
-    var secondKey = issueIdempotencyKey(result.auth().accessToken());
+    var secondKey = issueIdempotencyKey(
+        result.auth().accessToken(),
+        IdempotencyScopeValue.TRANSFER
+    );
 
     var transferCountBefore = fixtures.countTransfers();
     var outboxCountBefore = fixtures.countOutboxEvents();
@@ -368,7 +390,11 @@ public class PostSpecs extends TestContainerSetup {
     assertThat(fixtures.countOutboxEvents()).isEqualTo(outboxCountBefore);
     assertThat(fixtures.countLedgers()).isEqualTo(ledgerCountBefore);
 
-    var idempotency = fixtures.loadIdempotencyKey(memberId, secondKey);
+    var idempotency = fixtures.loadIdempotencyKey(
+        memberId,
+        secondKey,
+        IdempotencyScopeValue.WITHDRAW
+    );
     assertThat(idempotency.status()).isEqualTo("FAILED");
     assertThat(idempotency.responseSnapshot()).contains("FAILED", "DAILY_LIMIT_EXCEEDED");
   }
@@ -383,7 +409,10 @@ public class PostSpecs extends TestContainerSetup {
     var secondAmount = BigDecimal.valueOf(500_000L);
 
     var fromAccount = fixtures.createAccountWithBalance(memberId, "출금", fromAccountBalance);
-    var firstKey = issueIdempotencyKey(result.auth().accessToken());
+    var firstKey = issueIdempotencyKey(
+        result.auth().accessToken(),
+        IdempotencyScopeValue.WITHDRAW
+    );
 
     var firstResponse = withdraw(
         result.auth().accessToken(),
@@ -395,7 +424,10 @@ public class PostSpecs extends TestContainerSetup {
     assertTransferSucceeded(firstResponse);
     assertBalance(fromAccount.accountId(), fromAccountBalance.subtract(firstAmount));
 
-    var secondKey = issueIdempotencyKey(result.auth().accessToken());
+    var secondKey = issueIdempotencyKey(
+        result.auth().accessToken(),
+        IdempotencyScopeValue.WITHDRAW
+    );
 
     var transferCountBefore = fixtures.countTransfers();
     var outboxCountBefore = fixtures.countOutboxEvents();
@@ -431,7 +463,10 @@ public class PostSpecs extends TestContainerSetup {
     var depositAmount = BigDecimal.valueOf(5000L);
 
     var account = fixtures.createAccountWithBalance(memberId, "입금", accountBalance);
-    var idempotencyKey = issueIdempotencyKey(result.auth().accessToken());
+    var idempotencyKey = issueIdempotencyKey(
+        result.auth().accessToken(),
+        IdempotencyScopeValue.DEPOSIT
+    );
 
     var transferCountBefore = fixtures.countTransfers();
     var outboxCountBefore = fixtures.countOutboxEvents();
@@ -450,7 +485,11 @@ public class PostSpecs extends TestContainerSetup {
     assertThat(fixtures.countOutboxEvents()).isEqualTo(outboxCountBefore);
     assertThat(fixtures.countLedgers()).isEqualTo(ledgerCountBefore + 1);
 
-    var idempotency = fixtures.loadIdempotencyKey(memberId, idempotencyKey);
+    var idempotency = fixtures.loadIdempotencyKey(
+        memberId,
+        idempotencyKey,
+        IdempotencyScopeValue.DEPOSIT
+    );
     assertThat(idempotency.status()).isEqualTo("SUCCEEDED");
     assertThat(idempotency.responseSnapshot()).contains("SUCCEEDED");
   }
@@ -467,7 +506,10 @@ public class PostSpecs extends TestContainerSetup {
 
     var fromAccount = fixtures.createAccountWithBalance(memberId, "출금", fromAccountBalance);
     var toAccount = fixtures.createAccountWithBalance(memberId, "입금", toAccountBalance);
-    var idempotencyKey = issueIdempotencyKey(result.auth().accessToken());
+    var idempotencyKey = issueIdempotencyKey(
+        result.auth().accessToken(),
+        IdempotencyScopeValue.TRANSFER
+    );
 
     var now = LocalDateTime.now();
     fixtures.markIdempotencyInProgress(memberId, idempotencyKey, now.minusMinutes(10));
@@ -516,7 +558,10 @@ public class PostSpecs extends TestContainerSetup {
 
     var fromAccount = fixtures.createAccountWithBalance(memberId, "출금", fromAccountBalance);
     var toAccount = fixtures.createAccountWithBalance(memberId, "입금", toAccountBalance);
-    var idempotencyKey = issueIdempotencyKey(result.auth().accessToken());
+    var idempotencyKey = issueIdempotencyKey(
+        result.auth().accessToken(),
+        IdempotencyScopeValue.TRANSFER
+    );
 
     var outboxCountBefore = fixtures.countOutboxEvents();
 
@@ -552,7 +597,10 @@ public class PostSpecs extends TestContainerSetup {
 
     var fromAccount = fixtures.createAccountWithBalance(memberId, "출금", fromAccountBalance);
     var toAccount = fixtures.createAccountWithBalance(memberId, "입금", toAccountBalance);
-    var idempotencyKey = issueIdempotencyKey(result.auth().accessToken());
+    var idempotencyKey = issueIdempotencyKey(
+        result.auth().accessToken(),
+        IdempotencyScopeValue.TRANSFER
+    );
 
     // Act
     var response = transfer(
@@ -587,7 +635,10 @@ public class PostSpecs extends TestContainerSetup {
 
     var fromAccount = fixtures.createAccountWithBalance(memberId, "출금", fromAccountBalance);
     var toAccount = fixtures.createAccountWithBalance(memberId, "입금", toAccountBalance);
-    var idempotencyKey = issueIdempotencyKey(result.auth().accessToken());
+    var idempotencyKey = issueIdempotencyKey(
+        result.auth().accessToken(),
+        IdempotencyScopeValue.TRANSFER
+    );
 
     // Act
     var response = transfer(
@@ -626,7 +677,10 @@ public class PostSpecs extends TestContainerSetup {
 
     var fromAccount = fixtures.createAccountWithBalance(memberId, "출금", fromAccountBalance);
     var toAccount = fixtures.createAccountWithBalance(memberId, "입금", toAccountBalance);
-    var idempotencyKey = issueIdempotencyKey(result.auth().accessToken());
+    var idempotencyKey = issueIdempotencyKey(
+        result.auth().accessToken(),
+        IdempotencyScopeValue.TRANSFER
+    );
 
     var transferCountBefore = fixtures.countTransfers();
     var outboxCountBefore = fixtures.countOutboxEvents();
@@ -659,8 +713,17 @@ public class PostSpecs extends TestContainerSetup {
   }
 
   private String issueIdempotencyKey(String accessToken) {
+    return issueIdempotencyKey(accessToken, null);
+  }
+
+  private String issueIdempotencyKey(
+      String accessToken,
+      IdempotencyScopeValue scope
+  ) {
     var response = restTestClient.post()
-        .uri("/idempotency-keys")
+        .uri(uriBuilder -> uriBuilder.path("/idempotency-keys")
+            .queryParamIfPresent("scope", java.util.Optional.ofNullable(scope))
+            .build())
         .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken)
         .exchange()
         .expectStatus().isOk()
