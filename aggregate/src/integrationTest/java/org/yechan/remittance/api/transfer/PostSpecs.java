@@ -21,6 +21,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.web.servlet.client.RestTestClient;
+import org.yechan.remittance.TestContainerSetup;
 import org.yechan.remittance.TransferTestFixtures;
 import org.yechan.remittance.TransferTestFixtures.LedgerRow;
 import org.yechan.remittance.TransferTestFixturesConfig;
@@ -36,7 +37,7 @@ import org.yechan.remittance.transfer.dto.TransferRequest;
 
 @SpringBootTest(classes = AggregateApplication.class)
 @Import({TransferTestFixturesConfig.class, PostSpecs.TransferFailureConfig.class})
-public class PostSpecs {
+public class PostSpecs extends TestContainerSetup {
 
   @Autowired
   RestTestClient restTestClient;

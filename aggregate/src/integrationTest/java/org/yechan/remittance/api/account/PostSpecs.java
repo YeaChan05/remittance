@@ -8,6 +8,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.web.servlet.client.RestTestClient;
+import org.yechan.remittance.TestContainerSetup;
 import org.yechan.remittance.EmailGenerator;
 import org.yechan.remittance.PasswordGenerator;
 import org.yechan.remittance.TokenVerifier;
@@ -19,7 +20,7 @@ import org.yechan.remittance.member.dto.MemberLoginResponse;
 import org.yechan.remittance.member.dto.MemberRegisterRequest;
 
 @SpringBootTest(classes = AggregateApplication.class)
-public class PostSpecs {
+public class PostSpecs extends TestContainerSetup {
 
   @Autowired
   RestTestClient restTestClient;
