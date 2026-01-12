@@ -11,10 +11,15 @@
 
 ## API 요약
 
+- 회원가입 `POST /members`
+- 로그인 `POST /login`
+- 멱등키 발급 `POST /idempotency-keys`
 - 계좌 등록/삭제
 - 출금 `POST /withdrawals/{idempotencyKey}` (일 한도 1,000,000원)
+- 입금 `POST /deposits/{idempotencyKey}`
 - 이체 `POST /transfers/{idempotencyKey}` (수수료 1%, 일 한도 3,000,000원)
 - 거래내역 조회 `GET /transfers?accountId=...` (최신순)
+- 계좌 이체 알림(SSE) `GET /notifications/stream`
 
 ## 실행 방법
 
