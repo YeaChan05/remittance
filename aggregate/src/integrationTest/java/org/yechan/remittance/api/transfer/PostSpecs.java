@@ -35,6 +35,7 @@ import org.yechan.remittance.transfer.TransferQueryCondition;
 import org.yechan.remittance.transfer.TransferRepository;
 import org.yechan.remittance.transfer.TransferRequestProps;
 import org.yechan.remittance.transfer.dto.IdempotencyKeyCreateResponse;
+import org.yechan.remittance.transfer.dto.DepositRequest;
 import org.yechan.remittance.transfer.dto.TransferRequest;
 import org.yechan.remittance.transfer.dto.WithdrawalRequest;
 
@@ -422,6 +423,39 @@ public class PostSpecs extends TestContainerSetup {
   }
 
   @Test
+  void shouldDepositSuccessfully() {
+    var result = fixtures.setupAuthentication();
+
+    var memberId = Long.parseLong(result.authentication().getName());
+    var accountBalance = BigDecimal.valueOf(10000L);
+    var depositAmount = BigDecimal.valueOf(5000L);
+
+    var account = fixtures.createAccountWithBalance(memberId, "입금", accountBalance);
+    var idempotencyKey = issueIdempotencyKey(result.auth().accessToken());
+
+    var transferCountBefore = fixtures.countTransfers();
+    var outboxCountBefore = fixtures.countOutboxEvents();
+    var ledgerCountBefore = fixtures.countLedgers();
+
+    var response = deposit(
+        result.auth().accessToken(),
+        idempotencyKey,
+        account.accountId(),
+        depositAmount
+    );
+
+    assertTransferSucceeded(response);
+    assertBalance(account.accountId(), accountBalance.add(depositAmount));
+    assertThat(fixtures.countTransfers()).isEqualTo(transferCountBefore + 1);
+    assertThat(fixtures.countOutboxEvents()).isEqualTo(outboxCountBefore);
+    assertThat(fixtures.countLedgers()).isEqualTo(ledgerCountBefore + 1);
+
+    var idempotency = fixtures.loadIdempotencyKey(memberId, idempotencyKey);
+    assertThat(idempotency.status()).isEqualTo("SUCCEEDED");
+    assertThat(idempotency.responseSnapshot()).contains("SUCCEEDED");
+  }
+
+  @Test
   void shouldFailAfterIdempotencyTimeoutAndWatchdog() {
     // Arrange
     var result = fixtures.setupAuthentication();
@@ -687,6 +721,31 @@ public class PostSpecs extends TestContainerSetup {
 
     if (response == null) {
       throw new IllegalStateException("Withdrawal response is null");
+    }
+
+    return response;
+  }
+
+  private TransferResponse deposit(
+      String accessToken,
+      String idempotencyKey,
+      Long accountId,
+      BigDecimal amount
+  ) {
+    var response = restTestClient.post()
+        .uri(uriBuilder -> uriBuilder.path("/deposits/" + idempotencyKey)
+            .build())
+        .body(new DepositRequest(accountId, amount))
+        .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken)
+        .accept(MediaType.APPLICATION_JSON)
+        .exchange()
+        .expectStatus().isOk()
+        .expectBody(TransferResponse.class)
+        .returnResult()
+        .getResponseBody();
+
+    if (response == null) {
+      throw new IllegalStateException("Deposit response is null");
     }
 
     return response;
