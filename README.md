@@ -12,12 +12,12 @@
 ## API 요약
 
 - 계좌 등록/삭제
-- 입금/출금(일 한도 체크)
-- 이체(수수료 1%, 일 한도 체크)
-- 거래내역 조회(최신순)
+- 출금 `POST /withdrawals/{idempotencyKey}` (일 한도 1,000,000원)
+- 이체 `POST /transfers/{idempotencyKey}` (수수료 1%, 일 한도 3,000,000원)
+- 거래내역 조회 `GET /transfers?accountId=...` (최신순)
 
 ## 실행 방법
 
 - `./gradlew :aggregate:bootRun`
-- Docker Compose 파일은 `src/main/resources/docker-compose.yml`에 있습니다.
+- Docker Compose 파일은 `aggregate/src/main/resources/docker-compose.yml`에 있습니다.
 - aggregate 모듈은 여러 도메인을 한 곳에 묶어 실행하는 통합 실행용 모듈입니다.
