@@ -31,7 +31,7 @@ public class LedgerWriter {
       return;
     }
 
-    BigDecimal debitAmount = props.amount().add(props.fee());
+    BigDecimal debitAmount = props.debit();
     saveLedgerIfAbsent(
         result.transferId(),
         props.fromAccountId(),
