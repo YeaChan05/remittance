@@ -5,8 +5,8 @@ import org.springframework.boot.data.jpa.autoconfigure.DataJpaRepositoriesAutoCo
 import org.springframework.boot.persistence.autoconfigure.EntityScan;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
-import org.yechan.remittance.transfer.IdempotencyKeyRepository;
 import org.yechan.remittance.transfer.DailyLimitUsageRepository;
+import org.yechan.remittance.transfer.IdempotencyKeyRepository;
 import org.yechan.remittance.transfer.LedgerRepository;
 import org.yechan.remittance.transfer.OutboxEventRepository;
 import org.yechan.remittance.transfer.TransferRepository;

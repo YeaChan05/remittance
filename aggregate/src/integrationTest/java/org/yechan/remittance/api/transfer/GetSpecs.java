@@ -56,7 +56,8 @@ class GetSpecs extends TestContainerSetup {
     var result = fixtures.setupAuthentication();
 
     var memberId = Long.parseLong(result.authentication().getName());
-    var fromAccount = fixtures.createAccountWithBalance(memberId, "출금", BigDecimal.valueOf(5_000_000L));
+    var fromAccount = fixtures.createAccountWithBalance(memberId, "출금",
+        BigDecimal.valueOf(5_000_000L));
     var toAccount = fixtures.createAccountWithBalance(memberId, "입금", BigDecimal.ZERO);
 
     var firstKey = issueIdempotencyKey(result.auth().accessToken());
@@ -77,7 +78,8 @@ class GetSpecs extends TestContainerSetup {
     assertThat(response.transfers()).hasSize(2);
     assertThat(response.transfers().getFirst().transferId()).isEqualTo(secondResponse.transferId());
     assertThat(response.transfers().get(1).transferId()).isEqualTo(firstResponse.transferId());
-    assertThat(response.transfers()).isSortedAccordingTo(Comparator.comparing(TransferItem::completedAt).reversed());
+    assertThat(response.transfers()).isSortedAccordingTo(
+        Comparator.comparing(TransferItem::completedAt).reversed());
   }
 
   @Test
@@ -85,7 +87,8 @@ class GetSpecs extends TestContainerSetup {
     var result = fixtures.setupAuthentication();
 
     var memberId = Long.parseLong(result.authentication().getName());
-    var fromAccount = fixtures.createAccountWithBalance(memberId, "출금", BigDecimal.valueOf(1_000_000L));
+    var fromAccount = fixtures.createAccountWithBalance(memberId, "출금",
+        BigDecimal.valueOf(1_000_000L));
     var toAccount = fixtures.createAccountWithBalance(memberId, "입금", BigDecimal.ZERO);
 
     var key = issueIdempotencyKey(result.auth().accessToken());
@@ -96,7 +99,8 @@ class GetSpecs extends TestContainerSetup {
 
     assertThat(queryResponse.transfers()).hasSize(1);
     assertThat(queryResponse.transfers().getFirst().transferId()).isEqualTo(response.transferId());
-    assertThat(queryResponse.transfers().getFirst().fromAccountId()).isEqualTo(fromAccount.accountId());
+    assertThat(queryResponse.transfers().getFirst().fromAccountId()).isEqualTo(
+        fromAccount.accountId());
     assertThat(queryResponse.transfers().getFirst().toAccountId()).isEqualTo(toAccount.accountId());
   }
 
@@ -105,7 +109,8 @@ class GetSpecs extends TestContainerSetup {
     var result = fixtures.setupAuthentication();
 
     var memberId = Long.parseLong(result.authentication().getName());
-    var fromAccount = fixtures.createAccountWithBalance(memberId, "출금", BigDecimal.valueOf(2_000_000L));
+    var fromAccount = fixtures.createAccountWithBalance(memberId, "출금",
+        BigDecimal.valueOf(2_000_000L));
     var toAccount = fixtures.createAccountWithBalance(memberId, "입금", BigDecimal.ZERO);
 
     var firstKey = issueIdempotencyKey(result.auth().accessToken());

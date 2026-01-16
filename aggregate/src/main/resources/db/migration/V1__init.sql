@@ -23,11 +23,11 @@ create table core.account
 ) engine = InnoDB;
 create table core.daily_limit_usage
 (
-    account_id  bigint                                    not null,
-    usage_date  date                                      not null,
-    used_amount decimal(38, 2)                            not null,
+    account_id  bigint                                          not null,
+    usage_date  date                                            not null,
+    used_amount decimal(38, 2)                                  not null,
     created_at  datetime(6),
-    id          bigint                                    not null,
+    id          bigint                                          not null,
     updated_at  datetime(6),
     scope       enum ('DEPOSIT','REFUND','TRANSFER','WITHDRAW') not null,
     primary key (id)
@@ -55,16 +55,16 @@ create table core.member
 ) engine = InnoDB;
 create table core.transfer
 (
-    amount          decimal(38, 2)                            not null,
+    amount          decimal(38, 2)                                  not null,
     completed_at    datetime(6),
     created_at      datetime(6),
-    from_account_id bigint                                    not null,
-    id              bigint                                    not null,
-    requested_at    datetime(6)                               not null,
-    to_account_id   bigint                                    not null,
+    from_account_id bigint                                          not null,
+    id              bigint                                          not null,
+    requested_at    datetime(6)                                     not null,
+    to_account_id   bigint                                          not null,
     updated_at      datetime(6),
     scope           enum ('DEPOSIT','REFUND','WITHDRAW','TRANSFER') not null,
-    status          enum ('FAILED','IN_PROGRESS','SUCCEEDED') not null,
+    status          enum ('FAILED','IN_PROGRESS','SUCCEEDED')       not null,
     primary key (id)
 ) engine = InnoDB;
 alter table core.ledger
@@ -76,14 +76,14 @@ alter table core.member
     add constraint UKmbmcqelty0fbrvxp1q58dn57t unique (email);
 create table integration.idempotency_key
 (
-    client_id         bigint            not null,
+    client_id         bigint                                 not null,
     completed_at      datetime(6),
     created_at        datetime(6),
-    expires_at        datetime(6)       not null,
-    id                bigint            not null,
+    expires_at        datetime(6)                            not null,
+    id                bigint                                 not null,
     started_at        datetime(6),
     updated_at        datetime(6),
-    idempotency_key   varchar(255)      not null,
+    idempotency_key   varchar(255)                           not null,
     request_hash      varchar(255),
     response_snapshot varchar(255),
     scope             enum ('TRANSFER','DEPOSIT','WITHDRAW') not null,

@@ -25,5 +25,6 @@
 - madrapps/jacoco-report - Jacoco 리포트 생성
 
 ## Message Queue
+
 - Spring AMQP :`org.springframework.boot:spring-boot-starter-amqp` - AMQP 프로토콜 기반 메시지 큐 지원
 - RabbitMQ : 메시지 브로커로 RabbitMQ 사용

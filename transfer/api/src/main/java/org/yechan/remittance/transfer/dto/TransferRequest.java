@@ -5,8 +5,8 @@ import static org.yechan.remittance.transfer.TransferFailureCode.INVALID_REQUEST
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import org.yechan.remittance.transfer.TransferFailedException;
-import org.yechan.remittance.transfer.TransferRequestProps;
 import org.yechan.remittance.transfer.TransferProps.TransferScopeValue;
+import org.yechan.remittance.transfer.TransferRequestProps;
 
 public record TransferRequest(
     Long fromAccountId,
