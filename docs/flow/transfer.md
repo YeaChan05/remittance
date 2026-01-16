@@ -3,6 +3,48 @@
 계좌 이체는 멱등 처리 + outbox 패턴을 사용해
 정확히 한 번의 송금과 최소 한 번의 이벤트 발행을 보장한다.
 
+```mermaid
+flowchart TD
+    client[클라이언트]
+    idem[Idempotency-Key 발급]
+    api[Transfer API]
+    keyValidate{멱등키 유효?}
+    keyInvalid[에러 반환: 만료/미존재]
+    idemStore{멱등 레코드 상태}
+    idemSuccess[응답 스냅샷 반환]
+    idemFailed[FAILED 응답 반환]
+    idemProgress[202 IN_PROGRESS 반환]
+    idemConflict[409 Conflict 반환]
+    watchdog[IN_PROGRESS 배치 감시]
+    tx1[TX1: 송금 + Outbox]
+    balanceCheck{잔액 충분?}
+    tx1Failed[FAILED 기록 + 응답]
+    accounts[계좌 잔액 변경]
+    transfer[Transfer 기록]
+    outbox[Outbox 적재]
+    idemComplete[멱등 완료 처리]
+    response[응답 반환]
+    tx2[TX2: Ledger 기록]
+    publisher[Outbox Publisher]
+    mq[RabbitMQ]
+    consumer[Consumer]
+    notify[알림/후처리]
+    client --> idem --> api --> keyValidate
+    keyValidate -- 아니오 --> keyInvalid
+    keyValidate -- 예 --> idemStore
+    idemStore -- SUCCEEDED --> idemSuccess
+    idemStore -- FAILED --> idemFailed
+    idemStore -- IN_PROGRESS --> idemProgress
+    idemProgress -.-> watchdog
+    idemStore -- HASH_MISMATCH --> idemConflict
+    idemStore -- 신규/선점 --> tx1
+    tx1 --> balanceCheck
+    balanceCheck -- 아니오 --> tx1Failed
+    balanceCheck -- 예 --> accounts --> transfer --> outbox --> idemComplete --> response
+    tx1 --> tx2
+    outbox --> publisher --> mq --> consumer --> notify
+```
+
 ---
 
 ## 0. 데이터 모델 전제
