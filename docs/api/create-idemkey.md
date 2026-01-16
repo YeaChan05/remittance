@@ -11,7 +11,7 @@
 ## request
 
 - query
-  - `scope` (선택): `TRANSFER | DEPOSIT | WITHDRAW`
+    - `scope` (선택): `TRANSFER | DEPOSIT | WITHDRAW`
 
 ```http request
 POST /idempotency-keys?scope=TRANSFER

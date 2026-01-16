@@ -9,10 +9,10 @@
 ## request
 
 - query
-  - `accountId` (필수): 조회 대상 계좌 ID
-  - `from` (선택): 조회 시작 시각(ISO-8601)
-  - `to` (선택): 조회 종료 시각(ISO-8601)
-  - `limit` (선택): 최대 조회 건수
+    - `accountId` (필수): 조회 대상 계좌 ID
+    - `from` (선택): 조회 시작 시각(ISO-8601)
+    - `to` (선택): 조회 종료 시각(ISO-8601)
+    - `limit` (선택): 최대 조회 건수
 
 ```http request
 GET /transfers?accountId=1&from=2025-01-01T00:00:00&to=2025-01-31T23:59:59&limit=20
@@ -22,7 +22,7 @@ GET /transfers?accountId=1&from=2025-01-01T00:00:00&to=2025-01-31T23:59:59&limit
 
 - status: `200 OK`
 - body
-  - `transfers`: 거래 목록(최신순)
+    - `transfers`: 거래 목록(최신순)
 
 ```json
 {
@@ -45,5 +45,5 @@ GET /transfers?accountId=1&from=2025-01-01T00:00:00&to=2025-01-31T23:59:59&limit
 
 - status: `400 BAD_REQUEST`
 - context
-  - `INVALID_REQUEST`
-  - `ACCOUNT_NOT_FOUND`
+    - `INVALID_REQUEST`
+    - `ACCOUNT_NOT_FOUND`

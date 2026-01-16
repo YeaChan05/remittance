@@ -10,11 +10,11 @@
 ## request
 
 - path
-  - `idempotencyKey`: 멱등키
+    - `idempotencyKey`: 멱등키
 - body
-  - `fromAccountId`: 출금 계좌 ID
-  - `toAccountId`: 입금 계좌 ID
-  - `amount`: 이체 금액
+    - `fromAccountId`: 출금 계좌 ID
+    - `toAccountId`: 입금 계좌 ID
+    - `amount`: 이체 금액
 
 ```http request
 POST /transfers/{idempotencyKey}
@@ -31,9 +31,9 @@ Content-Type: application/json
 
 - status: `200 OK`
 - body
-  - `status`: `SUCCEEDED | FAILED | IN_PROGRESS`
-  - `transferId`: 거래 ID
-  - `errorCode`: 실패 코드
+    - `status`: `SUCCEEDED | FAILED | IN_PROGRESS`
+    - `transferId`: 거래 ID
+    - `errorCode`: 실패 코드
 
 ```json
 {
@@ -47,6 +47,6 @@ Content-Type: application/json
 
 - status: `400 BAD_REQUEST`
 - context
-  - `INVALID_REQUEST`
-  - `INSUFFICIENT_BALANCE`
-  - `DAILY_LIMIT_EXCEEDED`
+    - `INVALID_REQUEST`
+    - `INSUFFICIENT_BALANCE`
+    - `DAILY_LIMIT_EXCEEDED`
