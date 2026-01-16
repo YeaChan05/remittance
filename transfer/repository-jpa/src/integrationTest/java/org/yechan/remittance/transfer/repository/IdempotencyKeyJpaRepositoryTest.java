@@ -12,9 +12,11 @@ import org.springframework.boot.jdbc.test.autoconfigure.AutoConfigureTestDatabas
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestConstructor;
+import org.yechan.remittance.transfer.IdempotencyKeyModel;
 import org.yechan.remittance.transfer.IdempotencyKeyProps;
 import org.yechan.remittance.transfer.IdempotencyKeyProps.IdempotencyKeyStatusValue;
 import org.yechan.remittance.transfer.IdempotencyKeyProps.IdempotencyScopeValue;
+import org.yechan.remittance.transfer.IdempotencyKeyRepository;
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
@@ -23,12 +25,12 @@ import org.yechan.remittance.transfer.IdempotencyKeyProps.IdempotencyScopeValue;
 @TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
 class IdempotencyKeyJpaRepositoryTest {
 
-  private final IdempotencyKeyJpaRepository repository;
+  private final IdempotencyKeyRepository repository;
   private final EntityManager entityManager;
 
   @Autowired
   IdempotencyKeyJpaRepositoryTest(
-      IdempotencyKeyJpaRepository repository,
+      IdempotencyKeyRepository repository,
       EntityManager entityManager
   ) {
     this.repository = repository;
@@ -38,10 +40,10 @@ class IdempotencyKeyJpaRepositoryTest {
   @Test
   void markInProgressUpdatesOnlyWhenBeforeStart() {
     LocalDateTime now = LocalDateTime.parse("2026-01-01T00:00:00");
-    IdempotencyKeyEntity saved = saveIdempotencyKey(now, 10L, "idem-key");
+    IdempotencyKeyModel saved = saveIdempotencyKey(now, 10L, "idem-key");
     flushClear();
 
-    int updated = repository.markInProgress(
+    boolean updated = repository.tryMarkInProgress(
         saved.memberId(),
         IdempotencyScopeValue.TRANSFER,
         saved.idempotencyKey(),
@@ -50,8 +52,8 @@ class IdempotencyKeyJpaRepositoryTest {
     );
     flushClear();
 
-    assertThat(updated).isEqualTo(1);
-    var found = repository.findByMemberIdAndScopeAndIdempotencyKey(
+    assertThat(updated).isTrue();
+    var found = repository.findByKey(
         saved.memberId(),
         IdempotencyScopeValue.TRANSFER,
         saved.idempotencyKey()
@@ -61,23 +63,23 @@ class IdempotencyKeyJpaRepositoryTest {
     assertThat(found.get().requestHash()).isEqualTo("hash");
     assertThat(found.get().startedAt()).isEqualTo(now);
 
-    int secondUpdate = repository.markInProgress(
+    boolean secondUpdate = repository.tryMarkInProgress(
         saved.memberId(),
         IdempotencyScopeValue.TRANSFER,
         saved.idempotencyKey(),
         "hash-2",
         now.plusSeconds(30)
     );
-    assertThat(secondUpdate).isZero();
+    assertThat(secondUpdate).isFalse();
   }
 
   @Test
   void markSucceededUpdatesSnapshotAndCompletedAt() {
     LocalDateTime now = LocalDateTime.parse("2026-01-02T00:00:00");
-    IdempotencyKeyEntity saved = saveIdempotencyKey(now, 20L, "idem-succeed");
+    IdempotencyKeyModel saved = saveIdempotencyKey(now, 20L, "idem-succeed");
     flushClear();
 
-    repository.markInProgress(
+    repository.tryMarkInProgress(
         saved.memberId(),
         IdempotencyScopeValue.TRANSFER,
         saved.idempotencyKey(),
@@ -93,7 +95,7 @@ class IdempotencyKeyJpaRepositoryTest {
     );
     flushClear();
 
-    var found = repository.findByMemberIdAndScopeAndIdempotencyKey(
+    var found = repository.findByKey(
         saved.memberId(),
         IdempotencyScopeValue.TRANSFER,
         saved.idempotencyKey()
@@ -107,10 +109,10 @@ class IdempotencyKeyJpaRepositoryTest {
   @Test
   void markFailedUpdatesSnapshotAndCompletedAt() {
     LocalDateTime now = LocalDateTime.parse("2026-01-03T00:00:00");
-    IdempotencyKeyEntity saved = saveIdempotencyKey(now, 30L, "idem-failed");
+    IdempotencyKeyModel saved = saveIdempotencyKey(now, 30L, "idem-failed");
     flushClear();
 
-    repository.markInProgress(
+    repository.tryMarkInProgress(
         saved.memberId(),
         IdempotencyScopeValue.TRANSFER,
         saved.idempotencyKey(),
@@ -126,7 +128,7 @@ class IdempotencyKeyJpaRepositoryTest {
     );
     flushClear();
 
-    var found = repository.findByMemberIdAndScopeAndIdempotencyKey(
+    var found = repository.findByKey(
         saved.memberId(),
         IdempotencyScopeValue.TRANSFER,
         saved.idempotencyKey()
@@ -145,10 +147,10 @@ class IdempotencyKeyJpaRepositoryTest {
   @Test
   void markTimeoutBeforeMovesOldInProgressToTimeout() {
     LocalDateTime now = LocalDateTime.parse("2026-01-04T00:00:00");
-    IdempotencyKeyEntity saved = saveIdempotencyKey(now, 40L, "idem-timeout");
+    IdempotencyKeyModel saved = saveIdempotencyKey(now, 40L, "idem-timeout");
     flushClear();
 
-    repository.markInProgress(
+    repository.tryMarkInProgress(
         saved.memberId(),
         IdempotencyScopeValue.TRANSFER,
         saved.idempotencyKey(),
@@ -159,13 +161,12 @@ class IdempotencyKeyJpaRepositoryTest {
 
     int updated = repository.markTimeoutBefore(
         now.minus(Duration.ofMinutes(5)),
-        "{\"status\":\"FAILED\",\"error_code\":\"TIMEOUT\"}",
-        now
+        "{\"status\":\"FAILED\",\"error_code\":\"TIMEOUT\"}"
     );
     flushClear();
 
     assertThat(updated).isEqualTo(1);
-    var found = repository.findByMemberIdAndScopeAndIdempotencyKey(
+    var found = repository.findByKey(
         saved.memberId(),
         IdempotencyScopeValue.TRANSFER,
         saved.idempotencyKey()
@@ -175,13 +176,12 @@ class IdempotencyKeyJpaRepositoryTest {
     assertThat(found.get().responseSnapshot()).contains("TIMEOUT");
   }
 
-  private IdempotencyKeyEntity saveIdempotencyKey(
+  private IdempotencyKeyModel saveIdempotencyKey(
       LocalDateTime now,
       Long memberId,
       String idempotencyKey
   ) {
-    return repository.save(
-        IdempotencyKeyEntity.create(new TestIdempotencyKeyProps(memberId, idempotencyKey, now)));
+    return repository.save(new TestIdempotencyKeyProps(memberId, idempotencyKey, now));
   }
 
   private record TestIdempotencyKeyProps(

@@ -69,14 +69,6 @@ class IdempotencyKeyServiceTest {
     }
 
     @Override
-    public Optional<IdempotencyKeyModel> findByMemberIdAndIdempotencyKey(
-        Long memberId,
-        String idempotencyKey
-    ) {
-      return Optional.empty();
-    }
-
-    @Override
     public Optional<IdempotencyKeyModel> findByKey(
         Long memberId,
         IdempotencyScopeValue scope,

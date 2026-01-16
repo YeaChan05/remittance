@@ -4,28 +4,17 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 import org.yechan.remittance.transfer.IdempotencyKeyModel;
 import org.yechan.remittance.transfer.IdempotencyKeyProps;
+import org.yechan.remittance.transfer.IdempotencyKeyProps.IdempotencyKeyStatusValue;
 import org.yechan.remittance.transfer.IdempotencyKeyProps.IdempotencyScopeValue;
 import org.yechan.remittance.transfer.IdempotencyKeyRepository;
 
-public class IdempotencyKeyRepositoryImpl implements IdempotencyKeyRepository {
-
-  private final IdempotencyKeyJpaRepository repository;
-
-  public IdempotencyKeyRepositoryImpl(IdempotencyKeyJpaRepository repository) {
-    this.repository = repository;
-  }
+record IdempotencyKeyRepositoryImpl(
+    IdempotencyKeyJpaRepository repository
+) implements IdempotencyKeyRepository {
 
   @Override
   public IdempotencyKeyModel save(IdempotencyKeyProps props) {
     return repository.save(IdempotencyKeyEntity.create(props));
-  }
-
-  @Override
-  public Optional<IdempotencyKeyModel> findByMemberIdAndIdempotencyKey(
-      Long memberId,
-      String idempotencyKey
-  ) {
-    return repository.findByMemberIdAndIdempotencyKey(memberId, idempotencyKey).map(item -> item);
   }
 
   @Override
@@ -46,7 +35,18 @@ public class IdempotencyKeyRepositoryImpl implements IdempotencyKeyRepository {
       String requestHash,
       LocalDateTime startedAt
   ) {
-    return repository.markInProgress(memberId, scope, idempotencyKey, requestHash, startedAt) > 0;
+    var found = repository.findByMemberIdAndScopeAndIdempotencyKey(memberId, scope, idempotencyKey);
+    if (found.isEmpty()) {
+      return false;
+    }
+
+    var entity = found.get();
+    boolean updated = entity.tryMarkInProgress(requestHash, startedAt);
+
+    if (updated) {
+      repository.save(entity);
+    }
+    return updated;
   }
 
   @Override
@@ -57,9 +57,13 @@ public class IdempotencyKeyRepositoryImpl implements IdempotencyKeyRepository {
       String responseSnapshot,
       LocalDateTime completedAt
   ) {
-    repository.markSucceeded(memberId, scope, idempotencyKey, responseSnapshot, completedAt);
-    return repository.findByMemberIdAndScopeAndIdempotencyKey(memberId, scope, idempotencyKey)
+    var entity = repository
+        .findByMemberIdAndScopeAndIdempotencyKey(memberId, scope, idempotencyKey)
         .orElseThrow();
+
+    entity.markSucceeded(responseSnapshot, completedAt);
+
+    return repository.save(entity);
   }
 
   @Override
@@ -70,13 +74,26 @@ public class IdempotencyKeyRepositoryImpl implements IdempotencyKeyRepository {
       String responseSnapshot,
       LocalDateTime completedAt
   ) {
-    repository.markFailed(memberId, scope, idempotencyKey, responseSnapshot, completedAt);
-    return repository.findByMemberIdAndScopeAndIdempotencyKey(memberId, scope, idempotencyKey)
+    var entity = repository
+        .findByMemberIdAndScopeAndIdempotencyKey(memberId, scope, idempotencyKey)
         .orElseThrow();
+
+    entity.markFailed(responseSnapshot, completedAt);
+    return repository.save(entity);
   }
 
   @Override
   public int markTimeoutBefore(LocalDateTime cutoff, String responseSnapshot) {
-    return repository.markTimeoutBefore(cutoff, responseSnapshot, LocalDateTime.now());
+    var completedAt = LocalDateTime.now();
+    var candidates = repository.findByStatusAndStartedAtBefore(
+        IdempotencyKeyStatusValue.IN_PROGRESS,
+        cutoff
+    );
+
+    int updated = (int) candidates.stream()
+        .filter(entity -> entity.markTimeoutIfBefore(cutoff, responseSnapshot, completedAt))
+        .count();
+    repository.saveAll(candidates);
+    return updated;
   }
 }

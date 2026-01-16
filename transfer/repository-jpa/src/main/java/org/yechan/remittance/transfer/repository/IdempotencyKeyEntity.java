@@ -81,6 +81,49 @@ public class IdempotencyKeyEntity extends BaseEntity implements IdempotencyKeyMo
     );
   }
 
+  public boolean isExpired(LocalDateTime now) {
+    return expiresAt != null && expiresAt.isBefore(now);
+  }
+
+  public boolean tryMarkInProgress(String requestHash, LocalDateTime startedAt) {
+    if (status != IdempotencyKeyStatusValue.BEFORE_START) {
+      return false;
+    }
+    this.status = IdempotencyKeyStatusValue.IN_PROGRESS;
+    this.requestHash = requestHash;
+    this.startedAt = startedAt;
+    return true;
+  }
+
+  public void markSucceeded(String responseSnapshot, LocalDateTime completedAt) {
+    this.status = IdempotencyKeyStatusValue.SUCCEEDED;
+    this.responseSnapshot = responseSnapshot;
+    this.completedAt = completedAt;
+  }
+
+  public void markFailed(String responseSnapshot, LocalDateTime completedAt) {
+    this.status = IdempotencyKeyStatusValue.FAILED;
+    this.responseSnapshot = responseSnapshot;
+    this.completedAt = completedAt;
+  }
+
+  public boolean markTimeoutIfBefore(
+      LocalDateTime cutoff,
+      String responseSnapshot,
+      LocalDateTime completedAt
+  ) {
+    if (status != IdempotencyKeyStatusValue.IN_PROGRESS) {
+      return false;
+    }
+    if (startedAt == null || !startedAt.isBefore(cutoff)) {
+      return false;
+    }
+    this.status = IdempotencyKeyStatusValue.TIMEOUT;
+    this.responseSnapshot = responseSnapshot;
+    this.completedAt = completedAt;
+    return true;
+  }
+
   @Override
   public Long memberId() {
     return memberId;

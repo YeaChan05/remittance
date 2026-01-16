@@ -8,11 +8,6 @@ public interface IdempotencyKeyRepository {
 
   IdempotencyKeyModel save(IdempotencyKeyProps props);
 
-  Optional<IdempotencyKeyModel> findByMemberIdAndIdempotencyKey(
-      Long memberId,
-      String idempotencyKey
-  );
-
   Optional<IdempotencyKeyModel> findByKey(
       Long memberId,
       IdempotencyScopeValue scope,
