@@ -23,19 +23,11 @@ public class TransferIdempotencyHandler {
       IdempotencyScopeValue scope,
       LocalDateTime now
   ) {
-    var key = repository.findByKey(memberId, scope, idempotencyKey)
-        .orElseThrow(
-            () -> new TransferIdempotencyKeyNotFoundException("Idempotency key not found"));
-    if (key.expiresAt() != null && key.expiresAt().isBefore(now)) {
+    var key = getIdempotencyKey(memberId, idempotencyKey, scope);
+    if (key.isExpired(now)) {
       throw new TransferIdempotencyKeyExpiredException("Idempotency key expired");
     }
     return key;
-  }
-
-  public void validateRequestHash(IdempotencyKeyModel key, String requestHash) {
-    if (key.requestHash() != null && !key.requestHash().equals(requestHash)) {
-      throw new TransferIdempotencyKeyConflictException("Idempotency key conflict");
-    }
   }
 
   @Transactional(propagation = Propagation.REQUIRES_NEW)
@@ -61,19 +53,20 @@ public class TransferIdempotencyHandler {
       IdempotencyScopeValue scope,
       String requestHash
   ) {
-    IdempotencyKeyModel existing = repository.findByKey(
-            memberId,
-            scope,
-            idempotencyKey)
-        .orElseThrow(
-            () -> new TransferIdempotencyKeyNotFoundException("Idempotency key not found"));
-    validateRequestHash(existing, requestHash);
+    var existing = getIdempotencyKey(memberId, idempotencyKey, scope);
+
+    if (existing.isInvalidRequestHash(requestHash)) {
+      throw new TransferIdempotencyKeyConflictException("Idempotency key conflict");
+    }
+
     if (existing.status() == IdempotencyKeyStatusValue.IN_PROGRESS) {
       return TransferResult.inProgress();
     }
+
     if (existing.responseSnapshot() == null) {
       return TransferResult.inProgress();
     }
+
     return fromSnapshot(existing.responseSnapshot());
   }
 
