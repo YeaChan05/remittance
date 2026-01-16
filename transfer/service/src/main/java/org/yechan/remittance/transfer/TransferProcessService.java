@@ -12,8 +12,6 @@ import java.time.LocalDateTime;
 import org.springframework.transaction.annotation.Transactional;
 import org.yechan.remittance.account.AccountModel;
 import org.yechan.remittance.account.AccountRepository;
-import org.yechan.remittance.transfer.DailyLimitUsageModel;
-import org.yechan.remittance.transfer.DailyLimitUsageRepository;
 import org.yechan.remittance.transfer.TransferProps.TransferScopeValue;
 
 class TransferProcessService {
@@ -128,20 +126,20 @@ class TransferProcessService {
   private void updateBalances(TransferRequestProps props, AccountPair accounts) {
     if (props.scope() == TransferScopeValue.DEPOSIT) {
       BigDecimal updatedToBalance = accounts.toAccount().balance().add(props.amount());
-      accountRepository.updateBalance(() -> accounts.toAccount().accountId(), updatedToBalance);
+      accounts.toAccount().updateBalance(updatedToBalance);
       return;
     }
 
     BigDecimal debitAmount = props.amount().add(props.fee());
     BigDecimal updatedFromBalance = accounts.fromAccount().balance().subtract(debitAmount);
-    accountRepository.updateBalance(() -> accounts.fromAccount().accountId(), updatedFromBalance);
+    accounts.fromAccount().updateBalance(updatedFromBalance);
 
     if (props.scope() == TransferScopeValue.WITHDRAW) {
       return;
     }
 
     BigDecimal updatedToBalance = accounts.toAccount().balance().add(props.amount());
-    accountRepository.updateBalance(() -> accounts.toAccount().accountId(), updatedToBalance);
+    accounts.toAccount().updateBalance(updatedToBalance);
   }
 
   private TransferResult persistTransfer(
@@ -165,6 +163,16 @@ class TransferProcessService {
     );
 
     return result;
+  }
+
+  private IdempotencyKeyProps.IdempotencyScopeValue toIdempotencyScope(
+      TransferScopeValue scope
+  ) {
+    return switch (scope) {
+      case TRANSFER -> IdempotencyKeyProps.IdempotencyScopeValue.TRANSFER;
+      case WITHDRAW -> IdempotencyKeyProps.IdempotencyScopeValue.WITHDRAW;
+      case DEPOSIT -> IdempotencyKeyProps.IdempotencyScopeValue.DEPOSIT;
+    };
   }
 
   private record OutboxEventCreateCommand(
@@ -201,16 +209,5 @@ class TransferProcessService {
 
   private record AccountPair(AccountModel fromAccount, AccountModel toAccount) {
 
-  }
-
-  private IdempotencyKeyProps.IdempotencyScopeValue toIdempotencyScope(
-      TransferScopeValue scope
-  ) {
-    return switch (scope) {
-      case TRANSFER -> IdempotencyKeyProps.IdempotencyScopeValue.TRANSFER;
-      case WITHDRAW -> IdempotencyKeyProps.IdempotencyScopeValue.WITHDRAW;
-      case DEPOSIT -> IdempotencyKeyProps.IdempotencyScopeValue.DEPOSIT;
-      default -> IdempotencyKeyProps.IdempotencyScopeValue.TRANSFER;
-    };
   }
 }

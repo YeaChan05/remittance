@@ -140,11 +140,6 @@ class TransferNotificationServiceTest {
     }
 
     @Override
-    public AccountModel updateBalance(AccountIdentifier identifier, BigDecimal balance) {
-      throw new UnsupportedOperationException("Not used");
-    }
-
-    @Override
     public void delete(AccountIdentifier identifier) {
       throw new UnsupportedOperationException("Not used");
     }

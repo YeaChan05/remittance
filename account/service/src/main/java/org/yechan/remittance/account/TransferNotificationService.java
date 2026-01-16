@@ -11,7 +11,6 @@ record TransferNotificationService(
   private static final String MESSAGE_TYPE = "TRANSFER_RECEIVED";
 
 
-
   @Override
   public void notify(TransferNotificationProps props) {
     if (processedEventRepository.existsByEventId(props.eventId())) {
