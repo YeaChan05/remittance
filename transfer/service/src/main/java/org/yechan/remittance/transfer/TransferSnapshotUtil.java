@@ -52,7 +52,7 @@ public class TransferSnapshotUtil {
     return Long.parseLong(value);
   }
 
-  public static String hashRequest(TransferRequestProps props) {
+  public static String toHashRequest(TransferRequestProps props) {
     String canonical = "fromAccountId=" + props.fromAccountId()
         + "|toAccountId=" + props.toAccountId()
         + "|amount=" + props.amount();

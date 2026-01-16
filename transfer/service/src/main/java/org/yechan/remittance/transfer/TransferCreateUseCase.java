@@ -1,6 +1,6 @@
 package org.yechan.remittance.transfer;
 
-import static org.yechan.remittance.transfer.TransferSnapshotUtil.hashRequest;
+import static org.yechan.remittance.transfer.TransferSnapshotUtil.toHashRequest;
 
 import java.time.Clock;
 import java.time.LocalDateTime;
@@ -20,11 +20,13 @@ record TransferService(
   @Override
   public TransferResult transfer(Long memberId, String idempotencyKey, TransferRequestProps props) {
     LocalDateTime now = LocalDateTime.now(clock);
-    var scope = toIdempotencyScope(props.scope());
+    var scope = props.toIdempotencyScope();
     var key = idempotencyHandler.loadKey(memberId, idempotencyKey, scope, now);
-    var requestHash = hashRequest(props);
+    var requestHash = toHashRequest(props);
 
-    idempotencyHandler.validateRequestHash(key, requestHash);
+    if (key.isInvalidRequestHash(requestHash)) {
+      throw new TransferIdempotencyKeyConflictException("Idempotency key conflict");
+    }
 
     boolean marked = idempotencyHandler.markInProgress(
         memberId,
@@ -42,7 +44,7 @@ record TransferService(
     try {
       result = transferProcessService.process(memberId, idempotencyKey, props, now);
     } catch (TransferFailedException ex) {
-      TransferResult failed = TransferResult.failed(ex.getFailureCode());
+      var failed = TransferResult.failed(ex.getFailureCode());
       idempotencyHandler.markFailed(memberId, idempotencyKey, scope, failed, now);
       return failed;
     }
@@ -54,16 +56,5 @@ record TransferService(
     }
 
     return result;
-  }
-
-  private IdempotencyKeyProps.IdempotencyScopeValue toIdempotencyScope(
-      TransferProps.TransferScopeValue scope
-  ) {
-    return switch (scope) {
-      case TRANSFER -> IdempotencyKeyProps.IdempotencyScopeValue.TRANSFER;
-      case WITHDRAW -> IdempotencyKeyProps.IdempotencyScopeValue.WITHDRAW;
-      case DEPOSIT -> IdempotencyKeyProps.IdempotencyScopeValue.DEPOSIT;
-      default -> IdempotencyKeyProps.IdempotencyScopeValue.TRANSFER;
-    };
   }
 }

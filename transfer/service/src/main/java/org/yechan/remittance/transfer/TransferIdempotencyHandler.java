@@ -86,4 +86,10 @@ public class TransferIdempotencyHandler {
         now
     );
   }
+
+  private IdempotencyKeyModel getIdempotencyKey(Long memberId, String idempotencyKey,
+      IdempotencyScopeValue scope) {
+    return repository.findByKey(memberId, scope, idempotencyKey)
+        .orElseThrow(() -> new TransferIdempotencyKeyNotFoundException("Idempotency key not found"));
+  }
 }
