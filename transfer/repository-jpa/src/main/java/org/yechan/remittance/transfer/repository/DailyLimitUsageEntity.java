@@ -63,6 +63,11 @@ public class DailyLimitUsageEntity extends BaseEntity implements DailyLimitUsage
   }
 
   @Override
+  public Long dailyLimitUsageId() {
+    return super.getId();
+  }
+
+  @Override
   public Long accountId() {
     return accountId;
   }
