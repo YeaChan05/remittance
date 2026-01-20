@@ -9,7 +9,7 @@ import org.yechan.remittance.account.AccountModel;
 import org.yechan.remittance.account.AccountProps;
 
 @Entity
-@Table(name = "account", schema = "core")
+@Table(name = "account", catalog = "core")
 public class AccountEntity extends BaseEntity implements AccountModel {
 
   @Column(nullable = false)

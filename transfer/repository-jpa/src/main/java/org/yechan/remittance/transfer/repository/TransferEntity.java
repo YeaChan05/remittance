@@ -12,7 +12,7 @@ import org.yechan.remittance.transfer.TransferModel;
 import org.yechan.remittance.transfer.TransferProps;
 
 @Entity
-@Table(name = "transfer", schema = "core")
+@Table(name = "transfer", catalog = "core")
 public class TransferEntity extends BaseEntity implements TransferModel {
 
   @Column(nullable = false)

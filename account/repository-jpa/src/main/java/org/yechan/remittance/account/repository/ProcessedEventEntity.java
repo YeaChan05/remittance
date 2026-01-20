@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 import org.yechan.remittance.BaseEntity;
 
 @Entity
-@Table(name = "processed_events", schema = "integration")
+@Table(name = "processed_events", catalog = "integration")
 class ProcessedEventEntity extends BaseEntity {
 
   @Column(nullable = false, unique = true)

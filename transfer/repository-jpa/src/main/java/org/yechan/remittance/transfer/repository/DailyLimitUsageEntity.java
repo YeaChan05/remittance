@@ -16,7 +16,7 @@ import org.yechan.remittance.transfer.TransferProps.TransferScopeValue;
 @Entity
 @Table(
     name = "daily_limit_usage",
-    schema = "core",
+    catalog = "core",
     uniqueConstraints =
     @UniqueConstraint(
         name = "uk_daily_limit_usage_account_scope_date",

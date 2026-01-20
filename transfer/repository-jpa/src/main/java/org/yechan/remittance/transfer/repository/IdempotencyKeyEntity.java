@@ -14,7 +14,7 @@ import org.yechan.remittance.transfer.IdempotencyKeyProps;
 @Entity
 @Table(
     name = "idempotency_key",
-    schema = "integration",
+    catalog = "integration",
     uniqueConstraints =
     @UniqueConstraint(
         name = "uk_idempotency_key_client_scope",

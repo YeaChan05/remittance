@@ -15,7 +15,7 @@ import org.yechan.remittance.transfer.LedgerProps;
 @Entity
 @Table(
     name = "ledger",
-    schema = "core",
+    catalog = "core",
     uniqueConstraints =
     @UniqueConstraint(
         name = "uk_ledger_transfer_account_side",

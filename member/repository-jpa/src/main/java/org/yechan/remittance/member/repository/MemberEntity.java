@@ -8,7 +8,7 @@ import org.yechan.remittance.member.MemberModel;
 import org.yechan.remittance.member.MemberProps;
 
 @Entity
-@Table(name = "member", schema = "core")
+@Table(name = "member", catalog = "core")
 public class MemberEntity extends BaseEntity implements MemberModel {
 
   @Column(nullable = false)

@@ -10,7 +10,7 @@ import org.yechan.remittance.transfer.OutboxEventModel;
 import org.yechan.remittance.transfer.OutboxEventProps;
 
 @Entity
-@Table(name = "outbox_events", schema = "integration")
+@Table(name = "outbox_events", catalog = "integration")
 public class OutboxEventEntity extends BaseEntity implements OutboxEventModel {
 
 
