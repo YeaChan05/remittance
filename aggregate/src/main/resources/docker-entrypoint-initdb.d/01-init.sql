@@ -1,0 +1,6 @@
+CREATE DATABASE IF NOT EXISTS core;
+CREATE DATABASE IF NOT EXISTS integration;
+
+GRANT ALL PRIVILEGES ON core.* TO 'aggregate'@'%';
+GRANT ALL PRIVILEGES ON integration.* TO 'aggregate'@'%';
+FLUSH PRIVILEGES;

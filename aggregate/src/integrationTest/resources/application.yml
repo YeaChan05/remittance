@@ -2,16 +2,20 @@ spring:
   autoconfigure:
     exclude: org.springframework.boot.security.autoconfigure.actuate.web.servlet.ManagementWebSecurityAutoConfiguration
   datasource:
-    url: jdbc:tc:mysql:8.0.36:///aggregate
-    username: aggregate
-    password: aggregate
+    url: jdbc:tc:mysql:8.0.36:///aggregate?useInformationSchema=true&user=root&password=test&TC_INITSCRIPT=db/init/01-init.sql
+    username: root
+    password: test
   jpa:
     properties:
       hibernate:
         jdbc:
           time_zone: UTC
     hibernate:
-      ddl-auto: create
+      ddl-auto: validate
+    defer-datasource-initialization: false
+  liquibase:
+    enabled: true
+    change-log: classpath:/db/changelog/db.changelog-master.yaml
 management:
   endpoints:
     web:
@@ -28,3 +32,8 @@ auth:
 transfer:
   idempotency-key:
     expires-in: 24h
+
+logging:
+  level:
+    org.testcontainers: DEBUG
+    org.testcontainers.jdbc: DEBUG

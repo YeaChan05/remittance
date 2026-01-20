@@ -6,13 +6,19 @@ spring:
       file: classpath:docker-compose.yml
       lifecycle-management: start-and-stop
   datasource:
-    url: jdbc:mysql://localhost:3306/aggregate
-    username: aggregate
-    password: aggregate
+    url: jdbc:mysql://localhost:3306/aggregate?useInformationSchema=true
+    username: root
+    password: root
   jpa:
     database-platform: org.hibernate.dialect.MySQLDialect
     hibernate:
       ddl-auto: validate
+  liquibase:
+    enabled: true
+    change-log: classpath:/db/changelog/db.changelog-master.yaml
+    url: ${spring.datasource.url}
+    user: ${spring.datasource.username}
+    password: ${spring.datasource.password}
   rabbitmq:
     host: localhost
     port: 5672
@@ -44,3 +50,7 @@ auth:
 transfer:
   idempotency-key:
     expires-in: 24h
+
+logging:
+  level:
+    liquibase: debug

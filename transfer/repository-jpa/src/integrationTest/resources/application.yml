@@ -1,14 +1,7 @@
 spring:
   datasource:
-    url: jdbc:tc:mysql:8.0.36:///core
-    username: transfer
-    password: transfer
-  jpa:
-    show-sql: true
-    database-platform: org.hibernate.dialect.MySQLDialect
-    hibernate:
-      ddl-auto: create
-    properties:
-      hibernate:
-        jdbc:
-          time_zone: UTC
+    url: jdbc:tc:mysql:8.0.36:///core?useInformationSchema=true&user=root&password=test
+    username: root
+    password: test
+  liquibase:
+    change-log: classpath:/db/changelog/transfer/db.changelog-initial-schema.yaml
