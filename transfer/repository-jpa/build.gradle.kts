@@ -1,11 +1,11 @@
 dependencies {
     implementation(project(":common:repository-jpa"))
     implementation(project(":transfer:infrastructure"))
+    implementation("org.springframework.boot:spring-boot-starter-liquibase")
 
-    integrationTestImplementation("org.testcontainers:junit-jupiter")
-    integrationTestImplementation("org.testcontainers:mysql")
-    integrationTestImplementation("org.testcontainers:testcontainers")
-    integrationTestImplementation("org.testcontainers:jdbc")
+    integrationTestImplementation("org.springframework.boot:spring-boot-starter-liquibase")
+    integrationTestImplementation("org.testcontainers:testcontainers-mysql")
+    integrationTestImplementation(project(":transfer:schema"))
     integrationTestImplementation(testFixtures(project(":common:application-api")))
     integrationTestImplementation("org.springframework.boot:spring-boot-starter-data-jpa-test")
     integrationTestRuntimeOnly("com.mysql:mysql-connector-j") {

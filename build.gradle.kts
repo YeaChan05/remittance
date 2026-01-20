@@ -87,21 +87,10 @@ configureByTypePrefix("java") {
     }
 
     dependencies {
+        implementation(rootProject.libs.jspecify)
         testImplementation(enforcedPlatform(SpringBootPlugin.BOM_COORDINATES))
         testImplementation("org.springframework.boot:spring-boot-starter-test")
-        integrationTestImplementation(enforcedPlatform("org.testcontainers:testcontainers-bom:1.20.4"))
-        integrationTestImplementation("org.testcontainers:junit-jupiter")
-        integrationTestImplementation("org.testcontainers:testcontainers")
-        integrationTestRuntimeOnly("org.testcontainers:testcontainers")
-        integrationTestRuntimeOnly("org.testcontainers:jdbc")
-
-        implementation(rootProject.libs.jspecify)
-//        compileOnly(rootProject.libs.lombok)
-//        annotationProcessor(rootProject.libs.lombok)
-//        testCompileOnly(rootProject.libs.lombok)
-//        testAnnotationProcessor(rootProject.libs.lombok)
-//        integrationTestCompileOnly(rootProject.libs.lombok)
-//        integrationTestAnnotationProcessor(rootProject.libs.lombok)
+        integrationTestImplementation("org.springframework.boot:spring-boot-testcontainers")
     }
 }
 

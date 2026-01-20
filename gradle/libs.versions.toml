@@ -1,17 +1,14 @@
 [versions]
 jspecify = "1.0.0"
 jjwt = "0.13.0"
-#lombok = "1.18.42"
 
 [plugins]
 build-recipe = { id = "com.linecorp.build-recipe-plugin", version = "1.1.1" }
 spring-boot = { id = "org.springframework.boot", version = "4.0.1" }
 spotless = { id = "com.diffplug.spotless", version = "8.1.0" }
-kover = { id = "org.jetbrains.kotlinx.kover", version = "0.9.4" }
 
 [libraries]
 jspecify = { module = "org.jspecify:jspecify", version.ref = "jspecify" }
 jjwt-api = { module = "io.jsonwebtoken:jjwt-api", version.ref = "jjwt" }
 jjwt-impl = { module = "io.jsonwebtoken:jjwt-impl", version.ref = "jjwt" }
 jjwt-jackson = { module = "io.jsonwebtoken:jjwt-jackson", version.ref = "jjwt" }
-#lombok = { module = "org.projectlombok:lombok", version.ref = "lombok" }
