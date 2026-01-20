@@ -1,0 +1,14 @@
+databaseChangeLog:
+  - include:
+      file: db/changelog/transfer/db.changelog-initial-schema.yaml
+  - changeSet:
+      id: transfer-initial-data
+      author: remittance-transfer
+      changes:
+        - sqlFile:
+            dbms: mysql
+            encoding: UTF-8
+            endDelimiter: ';'
+            path: db/changelog/transfer/data.sql
+            splitStatements: true
+            stripComments: false

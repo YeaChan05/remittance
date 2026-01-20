@@ -1,0 +1,12 @@
+databaseChangeLog:
+  - changeSet:
+      id: member-initial-schema
+      author: remittance-member
+      changes:
+        - sqlFile:
+            dbms: mysql
+            encoding: UTF-8
+            endDelimiter: ';'
+            path: db/changelog/member/initial_schema.sql
+            splitStatements: true
+            stripComments: false

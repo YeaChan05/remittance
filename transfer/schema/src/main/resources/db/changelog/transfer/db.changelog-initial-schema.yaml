@@ -1,0 +1,12 @@
+databaseChangeLog:
+  - changeSet:
+      id: transfer-initial-schema
+      author: remittance-transfer
+      changes:
+        - sqlFile:
+            dbms: mysql
+            encoding: UTF-8
+            endDelimiter: ';'
+            path: db/changelog/transfer/initial_schema.sql
+            splitStatements: true
+            stripComments: false
