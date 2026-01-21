@@ -166,26 +166,16 @@ class TransferProcessService {
       outboxEventRepository.save(new OutboxEventCreateCommand(transfer, props, now));
     }
 
-    TransferResult result = TransferResult.succeeded(transfer.transferId());
+    var result = TransferResult.succeeded(transfer.transferId());
     idempotencyKeyRepository.markSucceeded(
         memberId,
-        toIdempotencyScope(props.scope()),
+        props.scope().toIdempotencyScope(),
         idempotencyKey,
         toSnapshot(result),
         now
     );
 
     return result;
-  }
-
-  private IdempotencyKeyProps.IdempotencyScopeValue toIdempotencyScope(
-      TransferScopeValue scope
-  ) {
-    return switch (scope) {
-      case TRANSFER -> IdempotencyKeyProps.IdempotencyScopeValue.TRANSFER;
-      case WITHDRAW -> IdempotencyKeyProps.IdempotencyScopeValue.WITHDRAW;
-      case DEPOSIT -> IdempotencyKeyProps.IdempotencyScopeValue.DEPOSIT;
-    };
   }
 
   private record OutboxEventCreateCommand(

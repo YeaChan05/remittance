@@ -2,6 +2,7 @@ package org.yechan.remittance.transfer;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import org.yechan.remittance.transfer.IdempotencyKeyProps.IdempotencyScopeValue;
 
 public interface TransferProps {
 
@@ -22,7 +23,16 @@ public interface TransferProps {
   enum TransferScopeValue {
     DEPOSIT,
     WITHDRAW,
-    TRANSFER
+    TRANSFER;
+
+    IdempotencyScopeValue toIdempotencyScope(
+    ) {
+      return switch (this) {
+        case TRANSFER -> IdempotencyScopeValue.TRANSFER;
+        case WITHDRAW -> IdempotencyScopeValue.WITHDRAW;
+        case DEPOSIT -> IdempotencyScopeValue.DEPOSIT;
+      };
+    }
   }
 
   enum TransferStatusValue {
