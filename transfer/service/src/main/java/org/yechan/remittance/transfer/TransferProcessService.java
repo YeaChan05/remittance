@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 import org.springframework.transaction.annotation.Transactional;
 import org.yechan.remittance.account.AccountModel;
 import org.yechan.remittance.account.AccountRepository;
-import org.yechan.remittance.transfer.TransferProps.TransferScopeValue;
+import org.yechan.remittance.member.MemberRepository;
 
 class TransferProcessService {
 
@@ -26,19 +26,22 @@ class TransferProcessService {
   private final OutboxEventRepository outboxEventRepository;
   private final IdempotencyKeyRepository idempotencyKeyRepository;
   private final DailyLimitUsageRepository dailyLimitUsageRepository;
+  private final MemberRepository memberRepository;
 
   public TransferProcessService(
       AccountRepository accountRepository,
       TransferRepository transferRepository,
       OutboxEventRepository outboxEventRepository,
       IdempotencyKeyRepository idempotencyKeyRepository,
-      DailyLimitUsageRepository dailyLimitUsageRepository
+      DailyLimitUsageRepository dailyLimitUsageRepository,
+      MemberRepository memberRepository
   ) {
     this.accountRepository = accountRepository;
     this.transferRepository = transferRepository;
     this.outboxEventRepository = outboxEventRepository;
     this.idempotencyKeyRepository = idempotencyKeyRepository;
     this.dailyLimitUsageRepository = dailyLimitUsageRepository;
+    this.memberRepository = memberRepository;
   }
 
   @Transactional
