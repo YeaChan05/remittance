@@ -4,6 +4,11 @@ import static org.yechan.remittance.transfer.TransferFailureCode.ACCOUNT_NOT_FOU
 import static org.yechan.remittance.transfer.TransferFailureCode.DAILY_LIMIT_EXCEEDED;
 import static org.yechan.remittance.transfer.TransferFailureCode.INSUFFICIENT_BALANCE;
 import static org.yechan.remittance.transfer.TransferFailureCode.INVALID_REQUEST;
+import static org.yechan.remittance.transfer.TransferFailureCode.MEMBER_NOT_FOUND;
+import static org.yechan.remittance.transfer.TransferFailureCode.OWNER_NOT_FOUND;
+import static org.yechan.remittance.transfer.TransferProps.TransferScopeValue.DEPOSIT;
+import static org.yechan.remittance.transfer.TransferProps.TransferScopeValue.TRANSFER;
+import static org.yechan.remittance.transfer.TransferProps.TransferScopeValue.WITHDRAW;
 import static org.yechan.remittance.transfer.TransferSnapshotUtil.toOutboxPayload;
 import static org.yechan.remittance.transfer.TransferSnapshotUtil.toSnapshot;
 
@@ -62,8 +67,7 @@ class TransferProcessService {
   private AccountPair lockAccounts(TransferRequestProps props) {
     Long fromAccountId = props.fromAccountId();
     Long toAccountId = props.toAccountId();
-    if (props.scope() == TransferScopeValue.WITHDRAW
-        || props.scope() == TransferScopeValue.DEPOSIT) {
+    if (props.scope() == WITHDRAW || props.scope() == DEPOSIT) {
       AccountModel fromAccount = getAccountForUpdate(fromAccountId);
       return new AccountPair(fromAccount, fromAccount);
     }
@@ -88,24 +92,30 @@ class TransferProcessService {
   }
 
   private void validateOwner(Long memberId, AccountPair accounts) {
-    if (!memberId.equals(accounts.fromAccount().memberId())) {
+    var fromMemberId = accounts.fromAccount().memberId();
+    var toMemberId = accounts.toAccount().memberId();
+    memberRepository.findById(() -> fromMemberId)
+        .orElseThrow(() -> new TransferFailedException(OWNER_NOT_FOUND, "Owner not found"));
+    memberRepository.findById(() -> toMemberId)
+        .orElseThrow(() -> new TransferFailedException(MEMBER_NOT_FOUND,
+            "Sending account's member not found"));
+    if (!memberId.equals(fromMemberId)) {
       throw new TransferFailedException(INVALID_REQUEST, "Account owner mismatch");
     }
   }
 
   private void validateBalance(TransferRequestProps props, AccountPair accounts) {
-    if (props.scope() == TransferScopeValue.DEPOSIT) {
+    if (props.scope() == DEPOSIT) {
       return;
     }
 
-    BigDecimal debitAmount = props.amount().add(props.fee());
-    if (accounts.fromAccount().balance().compareTo(debitAmount) < 0) {
+    if (accounts.isInsufficient(props.debit())) {
       throw new TransferFailedException(INSUFFICIENT_BALANCE, "Insufficient balance");
     }
   }
 
   private void validateDailyLimit(TransferRequestProps props, LocalDateTime now) {
-    if (props.scope() == TransferScopeValue.DEPOSIT) {
+    if (props.scope() == DEPOSIT) {
       return;
     }
     DailyLimitUsageModel usage = dailyLimitUsageRepository.findOrCreateForUpdate(
@@ -114,7 +124,7 @@ class TransferProcessService {
         now.toLocalDate()
     );
 
-    BigDecimal limit = props.scope() == TransferScopeValue.WITHDRAW
+    BigDecimal limit = props.scope() == WITHDRAW
         ? WITHDRAW_DAILY_LIMIT
         : TRANSFER_DAILY_LIMIT;
 
@@ -127,17 +137,17 @@ class TransferProcessService {
   }
 
   private void updateBalances(TransferRequestProps props, AccountPair accounts) {
-    if (props.scope() == TransferScopeValue.DEPOSIT) {
-      BigDecimal updatedToBalance = accounts.toAccount().balance().add(props.amount());
-      accounts.toAccount().updateBalance(updatedToBalance);
+    if (props.scope() == DEPOSIT) {
+      var balanceAfterDeposit = accounts.toAccount().balance().add(props.amount());
+      accounts.toAccount().updateBalance(balanceAfterDeposit);
       return;
     }
 
-    BigDecimal debitAmount = props.amount().add(props.fee());
-    BigDecimal updatedFromBalance = accounts.fromAccount().balance().subtract(debitAmount);
-    accounts.fromAccount().updateBalance(updatedFromBalance);
+    BigDecimal debit = props.debit();
+    BigDecimal remainingFromBalance = accounts.fromAccount().balance().subtract(debit);
+    accounts.fromAccount().updateBalance(remainingFromBalance);
 
-    if (props.scope() == TransferScopeValue.WITHDRAW) {
+    if (props.scope() == WITHDRAW) {
       return;
     }
 
@@ -152,7 +162,7 @@ class TransferProcessService {
       LocalDateTime now
   ) {
     TransferModel transfer = transferRepository.save(props);
-    if (props.scope() == TransferScopeValue.TRANSFER) {
+    if (props.scope() == TRANSFER) {
       outboxEventRepository.save(new OutboxEventCreateCommand(transfer, props, now));
     }
 
@@ -212,5 +222,8 @@ class TransferProcessService {
 
   private record AccountPair(AccountModel fromAccount, AccountModel toAccount) {
 
+    public boolean isInsufficient(BigDecimal debit) {
+      return fromAccount.balance().compareTo(debit) < 0;
+    }
   }
 }
