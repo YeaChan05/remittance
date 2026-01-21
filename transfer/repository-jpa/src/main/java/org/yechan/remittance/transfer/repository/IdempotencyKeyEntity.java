@@ -81,10 +81,7 @@ public class IdempotencyKeyEntity extends BaseEntity implements IdempotencyKeyMo
     );
   }
 
-  public boolean isExpired(LocalDateTime now) {
-    return expiresAt != null && expiresAt.isBefore(now);
-  }
-
+  @Override
   public boolean tryMarkInProgress(String requestHash, LocalDateTime startedAt) {
     if (status != IdempotencyKeyStatusValue.BEFORE_START) {
       return false;
@@ -95,18 +92,21 @@ public class IdempotencyKeyEntity extends BaseEntity implements IdempotencyKeyMo
     return true;
   }
 
+  @Override
   public void markSucceeded(String responseSnapshot, LocalDateTime completedAt) {
     this.status = IdempotencyKeyStatusValue.SUCCEEDED;
     this.responseSnapshot = responseSnapshot;
     this.completedAt = completedAt;
   }
 
+  @Override
   public void markFailed(String responseSnapshot, LocalDateTime completedAt) {
     this.status = IdempotencyKeyStatusValue.FAILED;
     this.responseSnapshot = responseSnapshot;
     this.completedAt = completedAt;
   }
 
+  @Override
   public boolean markTimeoutIfBefore(
       LocalDateTime cutoff,
       String responseSnapshot,
