@@ -92,7 +92,7 @@ class NotificationSessionRegistryTest {
     }
 
     @Override
-    public void completeWithError(Throwable ex) {
+    public void completeWithError(@NonNull Throwable ex) {
       super.completeWithError(ex);
       if (errorCallback != null) {
         errorCallback.accept(ex);
