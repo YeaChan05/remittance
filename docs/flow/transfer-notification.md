@@ -21,9 +21,10 @@
 ```json
 {
   "transferId": "...",
+  "fromAccountId": 1,
   "toAccountId": 2,
   "amount": 10000,
-  "occurredAt": "..."
+  "completedAt": "..."
 }
 ```
 
@@ -31,7 +32,7 @@
 
 ### `integration.processed_events` (컨슈머 멱등)
 
-- `event_id` UNIQUE
+- `event_id` UNIQUE (BIGINT)
 - `processed_at`
 
 ---

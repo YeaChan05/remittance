@@ -64,16 +64,16 @@ flowchart TD
 
 #### request_hash 규칙
 
-- canonical string
-  `fromAccountId=<long>|toAccountId=<long>|amount=<long>`
-- 모든 값은 정수
+- canonical JSON
+- `{"fromAccountId":<long>,"toAccountId":<long>,"amount":<decimal>}`
+- `amount`는 JSON number로 직렬화
 - `SHA-256` 해시
 
 ---
 
 ### `integration.outbox_events`
 
-- `event_id` (UUID, PK)
+- `event_id` (BIGINT, PK)
 - `aggregate_type`: `TRANSFER`
 - `aggregate_id`: transferId
 - `event_type`: `TRANSFER_COMPLETED`
@@ -134,7 +134,7 @@ WHERE client_id = ?
 
 - `started_at` 기준 timeout 검사
 
-    - timeout 미초과 → `202 Accepted`
+    - timeout 미초과 → `200 OK`
 
       ```json
       { "status": "IN_PROGRESS" }

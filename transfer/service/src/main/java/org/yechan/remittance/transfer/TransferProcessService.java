@@ -9,9 +9,6 @@ import static org.yechan.remittance.transfer.TransferFailureCode.OWNER_NOT_FOUND
 import static org.yechan.remittance.transfer.TransferProps.TransferScopeValue.DEPOSIT;
 import static org.yechan.remittance.transfer.TransferProps.TransferScopeValue.TRANSFER;
 import static org.yechan.remittance.transfer.TransferProps.TransferScopeValue.WITHDRAW;
-import static org.yechan.remittance.transfer.TransferSnapshotUtil.toOutboxPayload;
-import static org.yechan.remittance.transfer.TransferSnapshotUtil.toSnapshot;
-
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,6 +29,7 @@ class TransferProcessService {
   private final IdempotencyKeyRepository idempotencyKeyRepository;
   private final DailyLimitUsageRepository dailyLimitUsageRepository;
   private final MemberRepository memberRepository;
+  private final TransferSnapshotUtil transferSnapshotUtil;
 
   public TransferProcessService(
       AccountRepository accountRepository,
@@ -39,7 +37,8 @@ class TransferProcessService {
       OutboxEventRepository outboxEventRepository,
       IdempotencyKeyRepository idempotencyKeyRepository,
       DailyLimitUsageRepository dailyLimitUsageRepository,
-      MemberRepository memberRepository
+      MemberRepository memberRepository,
+      TransferSnapshotUtil transferSnapshotUtil
   ) {
     this.accountRepository = accountRepository;
     this.transferRepository = transferRepository;
@@ -47,6 +46,7 @@ class TransferProcessService {
     this.idempotencyKeyRepository = idempotencyKeyRepository;
     this.dailyLimitUsageRepository = dailyLimitUsageRepository;
     this.memberRepository = memberRepository;
+    this.transferSnapshotUtil = transferSnapshotUtil;
   }
 
   @Transactional
@@ -163,7 +163,8 @@ class TransferProcessService {
   ) {
     TransferModel transfer = transferRepository.save(props);
     if (props.scope() == TRANSFER) {
-      outboxEventRepository.save(new OutboxEventCreateCommand(transfer, props, now));
+      String payload = transferSnapshotUtil.toOutboxPayload(transfer, props, now);
+      outboxEventRepository.save(new OutboxEventCreateCommand(transfer, payload));
     }
 
     var result = TransferResult.succeeded(transfer.transferId());
@@ -171,7 +172,7 @@ class TransferProcessService {
         memberId,
         props.scope().toIdempotencyScope(),
         idempotencyKey,
-        toSnapshot(result),
+        transferSnapshotUtil.toSnapshot(result),
         now
     );
 
@@ -180,8 +181,7 @@ class TransferProcessService {
 
   private record OutboxEventCreateCommand(
       TransferModel transfer,
-      TransferRequestProps props,
-      LocalDateTime now
+      String payload
   ) implements OutboxEventProps {
 
     @Override
@@ -201,7 +201,7 @@ class TransferProcessService {
 
     @Override
     public String payload() {
-      return toOutboxPayload(transfer, props, now);
+      return payload;
     }
 
     @Override

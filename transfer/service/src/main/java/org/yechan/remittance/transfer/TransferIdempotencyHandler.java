@@ -1,8 +1,5 @@
 package org.yechan.remittance.transfer;
 
-import static org.yechan.remittance.transfer.TransferSnapshotUtil.fromSnapshot;
-import static org.yechan.remittance.transfer.TransferSnapshotUtil.toSnapshot;
-
 import java.time.LocalDateTime;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -12,9 +9,14 @@ import org.yechan.remittance.transfer.IdempotencyKeyProps.IdempotencyScopeValue;
 public class TransferIdempotencyHandler {
 
   private final IdempotencyKeyRepository repository;
+  private final TransferSnapshotUtil transferSnapshotUtil;
 
-  public TransferIdempotencyHandler(IdempotencyKeyRepository repository) {
+  public TransferIdempotencyHandler(
+      IdempotencyKeyRepository repository,
+      TransferSnapshotUtil transferSnapshotUtil
+  ) {
     this.repository = repository;
+    this.transferSnapshotUtil = transferSnapshotUtil;
   }
 
   public IdempotencyKeyModel loadKey(
@@ -67,7 +69,7 @@ public class TransferIdempotencyHandler {
       return TransferResult.inProgress();
     }
 
-    return fromSnapshot(existing.responseSnapshot());
+    return transferSnapshotUtil.fromSnapshot(existing.responseSnapshot());
   }
 
   @Transactional(propagation = Propagation.REQUIRES_NEW)
@@ -82,7 +84,7 @@ public class TransferIdempotencyHandler {
         memberId,
         scope,
         idempotencyKey,
-        toSnapshot(failed),
+        transferSnapshotUtil.toSnapshot(failed),
         now
     );
   }

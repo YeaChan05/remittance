@@ -1,7 +1,5 @@
 package org.yechan.remittance.transfer;
 
-import static org.yechan.remittance.transfer.TransferSnapshotUtil.toHashRequest;
-
 import java.time.Clock;
 import java.time.LocalDateTime;
 
@@ -14,6 +12,7 @@ record TransferService(
     TransferIdempotencyHandler idempotencyHandler,
     TransferProcessService transferProcessService,
     LedgerWriter ledgerWriter,
+    TransferSnapshotUtil transferSnapshotUtil,
     Clock clock
 ) implements TransferCreateUseCase {
 
@@ -22,7 +21,7 @@ record TransferService(
     LocalDateTime now = LocalDateTime.now(clock);
     var scope = props.toIdempotencyScope();
     var key = idempotencyHandler.loadKey(memberId, idempotencyKey, scope, now);
-    var requestHash = toHashRequest(props);
+    var requestHash = transferSnapshotUtil.toHashRequest(props);
 
     if (key.isInvalidRequestHash(requestHash)) {
       throw new TransferIdempotencyKeyConflictException("Idempotency key conflict");

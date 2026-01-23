@@ -522,7 +522,7 @@ public class PostSpecs extends TestContainerSetup {
     var outboxCountBefore = fixtures.countOutboxEvents();
     var ledgerCountBefore = fixtures.countLedgers();
 
-    String timeoutSnapshot = "transferId=|status=FAILED|errorCode=TIMEOUT";
+    String timeoutSnapshot = "{\"status\":\"FAILED\",\"errorCode\":\"TIMEOUT\"}";
     fixtures.markIdempotencyTimeoutBefore(now.minusMinutes(5), timeoutSnapshot, now);
 
     // Act
@@ -877,9 +877,9 @@ public class PostSpecs extends TestContainerSetup {
     var outbox = outboxes.getFirst();
     assertThat(outbox.status()).isEqualTo("NEW");
     assertThat(outbox.payload()).contains(
-        "fromAccountId=" + fromAccountId,
-        "toAccountId=" + toAccountId,
-        "amount=" + amount
+        "\"fromAccountId\":" + fromAccountId,
+        "\"toAccountId\":" + toAccountId,
+        "\"amount\":" + amount
     );
   }
 

@@ -11,7 +11,9 @@ class TransferNotificationPayloadParserTest {
   @Test
   void parseCreatesNotificationProps() {
     var parser = new TransferNotificationPayloadParser();
-    String payload = "transferId=11|fromAccountId=1|toAccountId=2|amount=10000|completedAt=2025-01-01T00:00";
+    String payload = """
+        {"transferId":11,"fromAccountId":1,"toAccountId":2,"amount":10000,"completedAt":"2025-01-01T00:00"}
+        """;
 
     TransferNotificationProps props = parser.parse(100L, payload);
 

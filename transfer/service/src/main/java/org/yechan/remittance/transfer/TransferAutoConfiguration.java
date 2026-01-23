@@ -12,9 +12,10 @@ class TransferAutoConfiguration {
 
   @Bean
   TransferIdempotencyHandler transferIdempotencyHandler(
-      IdempotencyKeyRepository idempotencyKeyRepository
+      IdempotencyKeyRepository idempotencyKeyRepository,
+      TransferSnapshotUtil transferSnapshotUtil
   ) {
-    return new TransferIdempotencyHandler(idempotencyKeyRepository);
+    return new TransferIdempotencyHandler(idempotencyKeyRepository, transferSnapshotUtil);
   }
 
   @Bean
@@ -24,7 +25,8 @@ class TransferAutoConfiguration {
       OutboxEventRepository outboxEventRepository,
       IdempotencyKeyRepository idempotencyKeyRepository,
       DailyLimitUsageRepository dailyLimitUsageRepository,
-      MemberRepository memberRepository
+      MemberRepository memberRepository,
+      TransferSnapshotUtil transferSnapshotUtil
   ) {
     return new TransferProcessService(
         accountRepository,
@@ -32,7 +34,8 @@ class TransferAutoConfiguration {
         outboxEventRepository,
         idempotencyKeyRepository,
         dailyLimitUsageRepository,
-        memberRepository
+        memberRepository,
+        transferSnapshotUtil
     );
   }
 
@@ -54,12 +57,14 @@ class TransferAutoConfiguration {
       TransferIdempotencyHandler idempotencyHandler,
       TransferProcessService transferProcessService,
       LedgerWriter ledgerWriter,
+      TransferSnapshotUtil transferSnapshotUtil,
       Clock clock
   ) {
     return new TransferService(
         idempotencyHandler,
         transferProcessService,
         ledgerWriter,
+        transferSnapshotUtil,
         clock
     );
   }

@@ -14,7 +14,9 @@ class TransferNotificationConsumerTest {
     TransferNotificationUseCase useCase = mock(TransferNotificationUseCase.class);
     var parser = new TransferNotificationPayloadParser();
     var consumer = new TransferNotificationConsumer(useCase, parser);
-    String payload = "transferId=11|fromAccountId=1|toAccountId=2|amount=10000|completedAt=2025-01-01T00:00";
+    String payload = """
+        {"transferId":11,"fromAccountId":1,"toAccountId":2,"amount":10000,"completedAt":"2025-01-01T00:00"}
+        """;
 
     consumer.consume(payload, 22L, "TRANSFER_COMPLETED");
 
@@ -26,7 +28,9 @@ class TransferNotificationConsumerTest {
     TransferNotificationUseCase useCase = mock(TransferNotificationUseCase.class);
     var parser = new TransferNotificationPayloadParser();
     var consumer = new TransferNotificationConsumer(useCase, parser);
-    String payload = "transferId=11|fromAccountId=1|toAccountId=2|amount=10000|completedAt=2025-01-01T00:00";
+    String payload = """
+        {"transferId":11,"fromAccountId":1,"toAccountId":2,"amount":10000,"completedAt":"2025-01-01T00:00"}
+        """;
 
     consumer.consume(payload, 22L, "OTHER_EVENT");
 
@@ -38,7 +42,9 @@ class TransferNotificationConsumerTest {
     TransferNotificationUseCase useCase = mock(TransferNotificationUseCase.class);
     var parser = new TransferNotificationPayloadParser();
     var consumer = new TransferNotificationConsumer(useCase, parser);
-    String payload = "transferId=11|fromAccountId=1|toAccountId=2|amount=10000|completedAt=2025-01-01T00:00";
+    String payload = """
+        {"transferId":11,"fromAccountId":1,"toAccountId":2,"amount":10000,"completedAt":"2025-01-01T00:00"}
+        """;
 
     consumer.consume(payload, null, "TRANSFER_COMPLETED");
 
