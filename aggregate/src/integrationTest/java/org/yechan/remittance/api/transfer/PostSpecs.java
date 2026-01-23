@@ -716,10 +716,6 @@ public class PostSpecs extends TestContainerSetup {
     assertThat(idempotency.responseSnapshot()).isNullOrEmpty();
   }
 
-  private String issueIdempotencyKey(String accessToken) {
-    return issueIdempotencyKey(accessToken, null);
-  }
-
   private String issueIdempotencyKey(
       String accessToken,
       IdempotencyScopeValue scope
