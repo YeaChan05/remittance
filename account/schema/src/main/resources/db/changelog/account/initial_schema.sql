@@ -3,14 +3,14 @@ CREATE DATABASE IF NOT EXISTS integration;
 
 CREATE TABLE IF NOT EXISTS core.account
 (
-    id             BIGINT       NOT NULL PRIMARY KEY,
-    member_id      BIGINT       NOT NULL,
-    bank_code      VARCHAR(50)  NOT NULL,
-    account_number VARCHAR(50)  NOT NULL,
-    account_name   VARCHAR(100) NOT NULL,
-    balance        DECIMAL(19,2) NOT NULL,
-    created_at     DATETIME(6)  NULL,
-    updated_at     DATETIME(6)  NULL
+    id             BIGINT         NOT NULL PRIMARY KEY,
+    member_id      BIGINT         NOT NULL,
+    bank_code      VARCHAR(50)    NOT NULL,
+    account_number VARCHAR(50)    NOT NULL,
+    account_name   VARCHAR(100)   NOT NULL,
+    balance        DECIMAL(19, 2) NOT NULL,
+    created_at     DATETIME(6)    NULL,
+    updated_at     DATETIME(6)    NULL
 );
 
 CREATE TABLE IF NOT EXISTS integration.processed_events
