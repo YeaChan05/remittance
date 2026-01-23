@@ -111,7 +111,7 @@ flowchart TD
 ### 선점 시도
 
 ```sql
-UPDATE idempotency_key
+UPDATE integration.idempotency_key
 SET status       = 'IN_PROGRESS',
     request_hash = ?,
     started_at   = now()
@@ -226,7 +226,7 @@ WHERE client_id = ?
 - 주기 실행(예: 1분)
 
 ```sql
-UPDATE idempotency_key
+UPDATE integration.idempotency_key
 SET status       = 'FAILED',
     completed_at = now(),
     error_code   = 'TIMEOUT'
@@ -243,7 +243,7 @@ WHERE status = 'IN_PROGRESS'
 
 ```sql
 SELECT *
-FROM outbox_events
+FROM integration.outbox_events
 WHERE status = 'NEW'
 ORDER BY created_at
     FOR
