@@ -11,7 +11,7 @@
 - 회원 자격 검증은 `member:service`가 담당하고 `member:api-internal`로 제공한다.
 - 토큰 검증/파싱은 공통 모듈로 이동한다.
 - 공통 인증 설정은 `common:security`에 둔다.
-- 각 도메인 `api` 모듈에서 `SecurityFilterChain`으로 경로별 인증 정책을 지정한다.
+- 각 도메인 `api` 모듈에서 `AuthorizeHttpRequestsCustomizer` 빈으로 경로별 인증 정책을 지정한다.
 
 ## 역할 분리
 
@@ -29,8 +29,7 @@
     - 공통 인증 필터(`OncePerRequestFilter`) 제공
     - 공통 보안 설정(예: 필터 빈, 기본 인증/인가 핸들러)
 - 각 `{domain}:api`
-    - `SecurityFilterChain`로 인증/인가 경로 정의
-    - 공통 인증 필터를 체인에 등록
+    - `AuthorizeHttpRequestsCustomizer`로 인증/인가 경로 정의
 
 ### 공통 모듈 구성 예시
 
@@ -80,7 +79,7 @@ auth:
 2. `member:api-internal`에서 내부 인증 계약/어댑터 제공
 3. `auth:service`에서 로그인 처리 및 토큰 발급
 4. `common`에 인증 필터 및 토큰 검증/파싱 구성
-5. 각 도메인 `api`에서 `SecurityFilterChain`에 필터 연결 및 경로 정책 정의
+5. 각 도메인 `api`에서 `AuthorizeHttpRequestsCustomizer`로 경로 정책 정의
 
 ## 관리 엔드포인트 처리
 

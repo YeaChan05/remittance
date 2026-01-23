@@ -4,10 +4,11 @@
 
 ## 1. 공통 규칙
 
-- 모든 도메인 모듈은 선택적으로 common 모듈을 통해서만 공통 코드를 의존한다.
+- 모든 도메인 모듈은 공통 코드는 `common` 모듈을 통해서만 의존한다.
 - 도메인 간 직접 의존은 model -> model 수준에서만 제한적으로 허용한다.
 - 구현 기술(JPA, Web, MQ, Batch 등)은 구현 모듈에만 존재한다.
 - Core 모듈은 구현 모듈을 절대 의존하지 않는다.
+- 예외: 인증/암호화가 필요한 유스케이스는 `common:security` 의존을 허용한다.
 - `api` 와 `implementation` 은 다음 의미를 가진다.
 
     - `api`: 외부 모듈이 타입(계약)을 알아야 함
@@ -24,7 +25,6 @@
     - 비즈니스 핵심 개념과 규칙
 - 의존 가능
 
-    - `common:model`
     - (필요 시) 다른 도메인의 `model`
 - 의존 금지
 
@@ -32,7 +32,7 @@
 
 ```kotlin
 dependencies {
-    implementation(project(":common:model"))
+    // 기본적으로 의존 없음
 }
 ```
 
@@ -48,7 +48,7 @@ dependencies {
     - `{domain}:model`
 - 의존 금지
 
-    - repository--, api, application
+    - repository-*, api, application
 
 ```kotlin
 dependencies {
@@ -72,9 +72,10 @@ dependencies {
     - `{domain}:model`
     - `{domain}:infrastructure`
     - `{domain}:exception`
+    - (인증/암호화 필요 시) `common:security`
 - 의존 금지
 
-    - repository--, api, application
+    - repository-*, api, application
 
 ```kotlin
 dependencies {
@@ -124,7 +125,7 @@ dependencies {
     - `{domain}:exception`
 - 의존 금지
 
-    - repository--
+    - repository-*
     - infrastructure 직접 호출
 
 ```kotlin
@@ -169,20 +170,24 @@ dependencies {
     - 통합 테스트 환경 구성
 - 의존 가능
 
-    - `common:application-{type}`
+    - `common:security`
+    - `{domain}:api`
     - `{domain}:repository-{type}`
+    - `{domain}:schema`
+    - `{domain}:mq-rabbitmq` (필요 시)
 - 비즈니스 로직 금지
 
 ```kotlin
 dependencies {
-    implementation(project(":common:application-{type}"))
+    implementation(project(":common:security"))
+    implementation(project(":{domain}:api"))
     implementation(project(":{domain}:repository-{repository-type}"))
-    integrationTestImplementation(
-        testFixtures(project(":common:application-{type}"))
-    )
+    implementation(project(":{domain}:schema"))
+    implementation(project(":{domain}:mq-rabbitmq"))
 }
 ```
 
+현재는 aggregate 모듈이 유일하게 application 모듈의 역할을 한다
 ---
 
 ## 4. 의존성 Diagram (Mermaid)
@@ -191,8 +196,6 @@ dependencies {
 
 ```mermaid
 graph TD
-    Model --> CommonModel
-
     Infrastructure --> Model
     Service --> Model
     Service --> Infrastructure
@@ -207,8 +210,10 @@ graph TD
     Repository --> Infrastructure
     Repository --> CommonRepository
 
+    Application --> Api
     Application --> Repository
-    Application --> CommonApplication
+    Application --> Schema
+    Application --> CommonSecurity
 ```
 
 ---

@@ -19,7 +19,7 @@
     - `DomainModel`
 - 내부 구성 요소
 
-    - `DomainIdentity`
+    - `DomainIdentifier`
     - `DomainProps`
 - 값 객체
 
@@ -94,11 +94,12 @@
 
 - Controller
 
-    - `DomainApiController`
+    - `{Domain}Controller` (기본)
+    - `{Domain}ApiController` (필요 시)
 - DTO
 
-    - `DomainApiRequest`
-    - `DomainApiResponse`
+    - `{Domain}{Action}Request`
+    - `{Domain}{Action}Response`
 
 규칙
 
@@ -109,13 +110,7 @@
 
 ### api-operation (운영/관리)
 
-- Controller
-
-    - `DomainOperationApiController`
-
-규칙
-
-- api와 책임은 같지만 접근 주체 기준으로 분리
+- 현재 미사용(필요 시 추가)
 
 ---
 
@@ -124,10 +119,13 @@
 - Controller
 
     - `DomainInternalApiController`
+- Adapter
+
+    - `DomainInternalAdapter`
 - DTO
 
-    - `DomainInternalApiRequest`
-    - `DomainInternalApiResponse`
+    - `{Domain}{Action}Request`
+    - `{Domain}{Action}Response`
 
 ---
 
@@ -173,7 +171,7 @@
     - `DomainJpaRepository`
 - 영속 엔티티
 
-    - `DomainJpaEntity`
+    - `DomainEntity`
 
 규칙
 
@@ -194,6 +192,7 @@
 - 비즈니스 로직 포함 x
 - Bean 조립, 설정, 실행만 담당
 
+현재는 aggregate만 runnable
 ---
 
 ## 6. 요약

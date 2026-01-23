@@ -5,12 +5,13 @@
 ## 1. 최상위 원칙
 
 * Driving -> Core -> Driven 방향만 허용한다.
-* 기술(JPA, Web, MQ 등)은 Driven 모듈에만 둔다.
+* 기술(JPA, Web, MQ 등)은 Driven 모듈에 둔다.
 * 다른 애플리케이션과의 연결은 `api-internal` 계약으로만 한다.
 * 인증/인가 책임은 역할별로 분리한다.
     * 로그인/토큰 발급: `auth:service`
     * 자격 검증: `member:service` + `member:api-internal`
     * 토큰 검증/필터: `common:security`
+* 예외: 암호화/토큰 관련 로직은 `common:security`를 통해 `service`에서도 사용할 수 있다.
 
 ---
 
@@ -24,8 +25,7 @@
 대상 모듈
 
 * `{domain}:api`
-* `{domain}:api-internal`
-* `{domain}:application-{type}`
+* `{domain}:api-internal` (필요 시)
 
 ### 2.2 Core
 
@@ -47,8 +47,18 @@
 대상 모듈
 
 * `{domain}:repository-{type}`
+* `{domain}:mq-{type}`
+* `{domain}:schema`
 * `common:repository-{type}`
 * `common:security`
+
+### 2.4 Assembly
+
+* 여러 도메인을 조합해 실행하는 모듈이다.
+
+대상 모듈
+
+* `aggregate`
 
 ---
 
@@ -61,13 +71,15 @@
  ├── service
  ├── exception
  ├── api
- ├── api-internal
+ ├── api-internal (optional)
  ├── repository-{type}
- └── application-{type}
+ ├── schema
+ └── mq-{type}
 ```
 
-* `repository-{type}`: `jpa|jdbc|mongo` 등 저장 방식에 따라 분기
-* `application-{type}`: 실제 실행(조립) 모듈, `api|batch` 등
+* `repository-{type}`: 현재 `jpa` 사용
+* `schema`: Liquibase changelog 보관
+* `mq-{type}`: MQ 기반 비동기 연동
 * `api-internal`: 내부 계약/어댑터 제공(다른 도메인에서 직접 호출)
 
 ---
@@ -117,6 +129,7 @@
 * `model`
 * `infrastructure`
 * `exception`
+* (인증 필요 시) `common:security`
 
 금지
 
@@ -175,17 +188,18 @@
 
 ---
 
-### 5.3 application-{type} (조립/실행)
+### 5.3 aggregate (조립/실행)
 
 * 실행 가능한 애플리케이션 모듈.
 * 각 adapter들의 Bean을 조립하기 위해 auto-configuration 의존을 둔다.
-* 통합 테스트 유틸리티를 이 계층에 둔다.
 
 의존(일반)
 
-* `{domain}:repository-{type}`
-* `{domain}:api` 또는 `{domain}:service`
-* `common:application-{type}`
+* `common:security`
+* `{domain}:api`
+* `{domain}:repository-jpa`
+* `{domain}:schema`
+* `{domain}:mq-{type}`
 
 금지
 
@@ -274,4 +288,6 @@
 * `common:security`
     - 의존: `common:exception`
 * `aggregate`
-    - 의존: `common:security`, `auth:service`, `member:api`, `member:repository-jpa`
+    - 의존: `common:security`, `account:api`, `transfer:api`, `member:api`,
+      `account|transfer|member:repository-jpa`, `account|transfer|member:schema`,
+      `account|transfer:mq-rabbitmq`
