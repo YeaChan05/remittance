@@ -201,19 +201,19 @@ graph TD
     Service --> Infrastructure
     Service --> Exception
 
-    Exception --> CommonException
+%%    Exception --> CommonException
 
     Api --> Service
     Api --> Exception
-    Api --> CommonApi
+%%    Api --> CommonApi
 
     Repository --> Infrastructure
-    Repository --> CommonRepository
+    Repository --> Schema
+%%    Repository --> CommonRepository
 
-    Application --> Api
-    Application --> Repository
-    Application --> Schema
-    Application --> CommonSecurity
+  Application --> Api
+  Application --> Repository
+%%    Application --> CommonSecurity
 ```
 
 ---
@@ -226,7 +226,7 @@ graph LR
     Model -.->|의존 금지| Api
     Service -.->|의존 금지| Repository
     Api -.->|의존 금지| Repository
-    Infrastructure -.->|구현 금지| Repository
+    Infrastructure -.->|의존 금지| Repository
 ```
 
 ---
