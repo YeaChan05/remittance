@@ -200,19 +200,16 @@ graph TD
     Service --> Model
     Service --> Infrastructure
     Service --> Exception
-
 %%    Exception --> CommonException
-
     Api --> Service
     Api --> Exception
 %%    Api --> CommonApi
-
     Repository --> Infrastructure
     Repository --> Schema
+    MQ --> Infrastructure
 %%    Repository --> CommonRepository
-
-  Application --> Api
-  Application --> Repository
+    Application --> Api
+    Application --> Repository
 %%    Application --> CommonSecurity
 ```
 
