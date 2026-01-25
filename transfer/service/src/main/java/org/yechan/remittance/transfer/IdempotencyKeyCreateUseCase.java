@@ -4,6 +4,7 @@ import java.time.Clock;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.UUID;
+import lombok.extern.slf4j.Slf4j;
 
 public interface IdempotencyKeyCreateUseCase {
 
@@ -17,6 +18,7 @@ interface IdempotencyKeyCreateProps {
   IdempotencyKeyProps.IdempotencyScopeValue scope();
 }
 
+@Slf4j
 record IdempotencyKeyService(
     IdempotencyKeyRepository repository,
     Clock clock,
@@ -25,8 +27,12 @@ record IdempotencyKeyService(
 
   @Override
   public IdempotencyKeyModel create(IdempotencyKeyCreateProps props) {
+     log.info("idempotency.create.start memberId={} scope={}", props.memberId(),
+         props.scope());
     var now = LocalDateTime.now(clock);
     var key = UUID.randomUUID().toString();
+     log.info("idempotency.create.persist memberId={} scope={}", props.memberId(),
+         props.scope());
     return repository.save(new GeneratedIdempotencyKeyProps(props, key, now));
   }
 

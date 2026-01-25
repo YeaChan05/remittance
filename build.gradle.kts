@@ -1,3 +1,4 @@
+
 import com.linecorp.support.project.multi.recipe.configureByTypeExpression
 import com.linecorp.support.project.multi.recipe.configureByTypeHaving
 import com.linecorp.support.project.multi.recipe.configureByTypePrefix
@@ -88,6 +89,8 @@ configureByTypePrefix("java") {
 
     dependencies {
         implementation(rootProject.libs.jspecify)
+        compileOnly(rootProject.libs.lombok)
+        annotationProcessor(rootProject.libs.lombok)
         testImplementation(enforcedPlatform(SpringBootPlugin.BOM_COORDINATES))
         testImplementation("org.springframework.boot:spring-boot-starter-test")
         integrationTestImplementation("org.springframework.boot:spring-boot-testcontainers")

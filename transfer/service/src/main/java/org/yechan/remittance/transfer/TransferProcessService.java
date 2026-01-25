@@ -12,11 +12,13 @@ import static org.yechan.remittance.transfer.TransferProps.TransferScopeValue.WI
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.transaction.annotation.Transactional;
 import org.yechan.remittance.account.AccountModel;
 import org.yechan.remittance.account.AccountRepository;
 import org.yechan.remittance.member.MemberRepository;
 
+@Slf4j
 class TransferProcessService {
 
   private static final BigDecimal WITHDRAW_DAILY_LIMIT = BigDecimal.valueOf(1_000_000);
@@ -57,6 +59,7 @@ class TransferProcessService {
       TransferRequestProps props,
       LocalDateTime now
   ) {
+    log.info("transfer.process.start memberId={} scope={}", memberId, props.scope());
     AccountPair accounts = lockAccounts(props);
     validateOwner(memberId, accounts);
     validateDailyLimit(props, now);
@@ -73,6 +76,7 @@ class TransferProcessService {
       return new AccountPair(fromAccount, fromAccount);
     }
     if (fromAccountId.equals(toAccountId)) {
+      log.warn("transfer.process.same_account fromAccountId={}", fromAccountId);
       throw new TransferFailedException(INVALID_REQUEST, "Same account");
     }
 
@@ -89,18 +93,29 @@ class TransferProcessService {
 
   private AccountModel getAccountForUpdate(Long accountId) {
     return accountRepository.findByIdForUpdate(() -> accountId)
-        .orElseThrow(() -> new TransferFailedException(ACCOUNT_NOT_FOUND, "Account not found"));
+        .orElseThrow(() -> {
+          log.warn("transfer.process.account_not_found accountId={}", accountId);
+          return new TransferFailedException(ACCOUNT_NOT_FOUND, "Account not found");
+        });
   }
 
   private void validateOwner(Long memberId, AccountPair accounts) {
     var fromMemberId = accounts.fromAccount().memberId();
     var toMemberId = accounts.toAccount().memberId();
     memberRepository.findById(() -> fromMemberId)
-        .orElseThrow(() -> new TransferFailedException(OWNER_NOT_FOUND, "Owner not found"));
+        .orElseThrow(() -> {
+          log.warn("transfer.process.owner_not_found fromMemberId={}", fromMemberId);
+          return new TransferFailedException(OWNER_NOT_FOUND, "Owner not found");
+        });
     memberRepository.findById(() -> toMemberId)
-        .orElseThrow(() -> new TransferFailedException(MEMBER_NOT_FOUND,
-            "Sending account's member not found"));
+        .orElseThrow(() -> {
+          log.warn("transfer.process.receiver_member_not_found toMemberId={}", toMemberId);
+          return new TransferFailedException(MEMBER_NOT_FOUND,
+              "Sending account's member not found");
+        });
     if (!memberId.equals(fromMemberId)) {
+      log.warn("transfer.process.owner_mismatch memberId={} fromMemberId={}", memberId,
+          fromMemberId);
       throw new TransferFailedException(INVALID_REQUEST, "Account owner mismatch");
     }
   }
@@ -111,6 +126,8 @@ class TransferProcessService {
     }
 
     if (accounts.isInsufficient(props.debit())) {
+       log.warn("transfer.process.insufficient_balance fromAccountId={}",
+           accounts.fromAccount().accountId());
       throw new TransferFailedException(INSUFFICIENT_BALANCE, "Insufficient balance");
     }
   }
@@ -131,6 +148,8 @@ class TransferProcessService {
 
     BigDecimal nextUsed = usage.usedAmount().add(props.amount());
     if (nextUsed.compareTo(limit) > 0) {
+       log.warn("transfer.process.daily_limit_exceeded fromAccountId={} scope={}",
+           props.fromAccountId(), props.scope());
       throw new TransferFailedException(DAILY_LIMIT_EXCEEDED, "Daily limit exceeded");
     }
 
@@ -164,6 +183,7 @@ class TransferProcessService {
   ) {
     TransferModel transfer = transferRepository.save(props);
     if (props.scope() == TRANSFER) {
+       log.info("transfer.process.outbox.create transferId={}", transfer.transferId());
       String payload = transferSnapshotUtil.toOutboxPayload(transfer, props, now);
       outboxEventRepository.save(new OutboxEventCreateCommand(transfer, payload));
     }

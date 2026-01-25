@@ -1,11 +1,13 @@
 package org.yechan.remittance.transfer;
 
 import java.time.LocalDateTime;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.yechan.remittance.transfer.IdempotencyKeyProps.IdempotencyKeyStatusValue;
 import org.yechan.remittance.transfer.IdempotencyKeyProps.IdempotencyScopeValue;
 
+@Slf4j
 public class TransferIdempotencyHandler {
 
   private final IdempotencyKeyRepository repository;
@@ -25,8 +27,10 @@ public class TransferIdempotencyHandler {
       IdempotencyScopeValue scope,
       LocalDateTime now
   ) {
+    log.info("transfer.idempotency.load memberId={} scope={}", memberId, scope);
     var key = getIdempotencyKey(memberId, idempotencyKey, scope);
     if (key.isExpired(now)) {
+      log.warn("transfer.idempotency.expired memberId={} scope={}", memberId, scope);
       throw new TransferIdempotencyKeyExpiredException("Idempotency key expired");
     }
     return key;
@@ -40,6 +44,7 @@ public class TransferIdempotencyHandler {
       String requestHash,
       LocalDateTime now
   ) {
+    log.debug("transfer.idempotency.mark_in_progress memberId={} scope={}", memberId, scope);
     return repository.tryMarkInProgress(
         memberId,
         scope,
@@ -55,17 +60,21 @@ public class TransferIdempotencyHandler {
       IdempotencyScopeValue scope,
       String requestHash
   ) {
+    log.info("transfer.idempotency.resolve memberId={} scope={}", memberId, scope);
     var existing = getIdempotencyKey(memberId, idempotencyKey, scope);
 
     if (existing.isInvalidRequestHash(requestHash)) {
+      log.warn("transfer.idempotency.conflict memberId={} scope={}", memberId, scope);
       throw new TransferIdempotencyKeyConflictException("Idempotency key conflict");
     }
 
     if (existing.status() == IdempotencyKeyStatusValue.IN_PROGRESS) {
+      log.info("transfer.idempotency.in_progress memberId={} scope={}", memberId, scope);
       return TransferResult.inProgress();
     }
 
     if (existing.responseSnapshot() == null) {
+      log.info("transfer.idempotency.no_snapshot memberId={} scope={}", memberId, scope);
       return TransferResult.inProgress();
     }
 
@@ -80,6 +89,7 @@ public class TransferIdempotencyHandler {
       TransferResult failed,
       LocalDateTime now
   ) {
+    log.warn("transfer.idempotency.mark_failed memberId={} scope={}", memberId, scope);
     repository.markFailed(
         memberId,
         scope,
